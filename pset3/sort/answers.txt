@@ -1,0 +1,11 @@
+sort1 uses: Bubble Sort
+
+How do you know?: Because Bubble Sort is usually the best in Omega which is Omega(n)
+
+sort2 uses: Merge Sort
+
+How do you know?: Because Merge Sort has the same O(n log n) for every case, and is usually faster than both Bubble Sort and Selection Sort
+
+sort3 uses: Selection Sort
+
+How do you know?: Because its numbers are almost the same, which is O or Omega(n squared)

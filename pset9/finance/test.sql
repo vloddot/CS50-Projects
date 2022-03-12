@@ -1,0 +1,8 @@
+CREATE TABLE quotes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name TEXT NOT NULL,
+    price NUMERIC NOT NULL,
+    symbol TEXT NOT NULL,
+    shares INTEGER NOT NULL,
+    FOREIGN KEY (id) REFERENCES users(user_id)
+)

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>French time!</title>
+        <script>
+            document.addEventListener('DomContentLoaded', function() {
+                let correct = document.querySelector('.correct');
+                correct.addEventListener('click', function() {
+                    correct.style.backgroundColor = 'green';
+                    document.querySelector('#feedback1').innerHTML = 'Correct!';
+                });
+
+                let incorrects = document.querySelectorAll('.incorrect');
+                for (let i = 0; i < incorrects.length; i++)
+                {
+                    incorrects[i].addEventListener('click', function() {
+                        incorrects[i].style.backgroundColor = 'red';
+                        document.querySelector('#feedback1').innerHTML = 'Incorrect';
+                    });
+                }
+
+            });
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>French time!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <p>Complete this sentence</p>
+
+                <h3>Je crois qu'il va aimer ...... maison.</h3>
+                <button class="correct">cette</button>
+                <button class="incorrect">celui-ci</button>
+                <button class="incorrect">ce</button>
+                <button class="incorrect">cet</button>
+
+                <p id="feedback1"></p>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <p>Translate this sentence</p>
+                <h3> I have to turn to the left. </h3>
+                <input type="text" placeholder="Translate this sentence">
+                <button id="check">Check answer</button>
+
+                <p id="feedback2"></p>
+            </div>
+        </div>
+    </body>
+</html>
