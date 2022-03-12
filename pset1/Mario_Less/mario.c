@@ -1,15 +1,15 @@
-#include <cs50.h>
 #include <stdio.h>
 
 int main(void)
 {
     // Asks user for input between 1 and 8
-    int Height;
+    int height;
     do
     {
-        Height = get_int("Height: ");
+        printf("Height: ");
+        scanf("%i", &height);
     }
-    while (Height < 1 || Height > 8);
+    while (height < 1 || height > 8);
 
     int i;
     int j;
@@ -31,9 +31,9 @@ int main(void)
     //  ##
     // ###
 
-    for (i = 0; i < Height; i++)
+    for (i = 0; i < height; i++)
     {
-        for (j = Height - 1; j > i; j--)
+        for (j = height - 1; j > i; j--)
         {
             printf(" ");
         }
