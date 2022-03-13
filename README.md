@@ -5,7 +5,7 @@ Each pset folder has a README.md like this one explaining what each problem is m
 
 Here is a list of all projects in these problem sets:
 
-    [pset1](./pset1):
+    [pset1](projects/pset1):
         Cash
         Credit
         Hello
