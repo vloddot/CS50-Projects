@@ -4,36 +4,36 @@ This is a collection of my problem sets I solved in CS50, some of these problem 
 Each pset folder has a README.md like this one explaining what each problem is meant to solve
 
 Here is a list of all projects in these problem sets:
-    pset1:
+    [pset1] (pset1):
         Cash
         Credit
         Hello
         Mario_Less (less comfortable)
         Mario_More (more comfortable)
 
-    pset2:
+    [pset2] (pset2):
         Caesar
         Readability
         Scrabble (lab)
         Substitution
 
-    pset3:
+    [pset3] (pset3):
         Plurality
         Runoff
         Sort (lab)
         Tideman
 
-    pset4:
+    [pset4] (pset4):
         Filter-less (less comfortable)
         Filter-more (more comfortable)
         Recover
         Volume (lab)
 
-    pset5:
+    [pset5] (pset5):
         Inheritance (lab)
         Speller
 
-    pset6 (This problem set is mostly filled with sentimental problem sets solved earlier in pset1 using python):
+    [pset6] (pset6) (This problem set is mostly filled with sentimental problem sets solved earlier in pset1 using python):
         Note: Sentimental means solved earlier in pset1 just with python this time
         DNA
         Sentimental Cash 
