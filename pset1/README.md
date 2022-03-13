@@ -4,7 +4,7 @@
 
 ## This README will explain the goals of each problem
 
-# Cash:
+## Cash:
 ### Calculate the amount of coins a customer should recieve based on how many cents they choose in user input
 
 ## Credit:
