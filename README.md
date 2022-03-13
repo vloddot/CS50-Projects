@@ -44,7 +44,7 @@ Here is a list of all projects in these problem sets:
         Sentimental Readability
         World Cup (lab)
 
-    pset7 (This problem set is the introduction to SQL, no 'coding' attached):
+    pset7 (This problem set is the introduction to SQL, no `coding` attached):
         Fiftyville
         Movies
         Songs (lab)
@@ -58,4 +58,4 @@ Here is a list of all projects in these problem sets:
         Finance
 
     pset10 (final project):
-        Planning to create tic tac toe using Lua with the LÖVE 2D framework (found in love2d.org)
+        Planning to create tic tac toe using Lua with the LÖVE 2D framework (found in [love2d.org](love2d.org))
