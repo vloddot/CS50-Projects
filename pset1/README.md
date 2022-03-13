@@ -14,7 +14,7 @@
 > Greet user by asking them what their name is and outputting "Hello, `name`"
 
 ### Mario_Less:
-> Make a pyramid of a specified height between 1 and 8 similar to Super Mario Bros.'s flag jump
+> Make a pyramid of a specified height between 1 and 8 similar to `Super Mario Bros`.'s flag jump
 
 ### Mario_More:
-> Make a pyramid of a specified height between 1 and 8 similar to Super Mario Bros.'s 1-1 level's jump
+> Make a pyramid of a specified height between 1 and 8 similar to `Super Mario Bros`.'s 1-1 level's jump
