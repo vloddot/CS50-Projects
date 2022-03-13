@@ -4,7 +4,8 @@ This is a collection of my problem sets I solved in CS50, some of these problem 
 Each pset folder has a README.md like this one explaining what each problem is meant to solve
 
 Here is a list of all projects in these problem sets:
-    [pset1] (pset1):
+
+    [pset1] (./pset1):
         Cash
         Credit
         Hello
