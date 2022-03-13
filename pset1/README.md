@@ -9,7 +9,7 @@
 ![Cash](../screenshots/cash.png)
 ### Credit:
 #### Validate a credit card using IBM's mastermind `Hans Peter Luhn`'s algorithm
-
+![Credit](../screenshots/credit.png)
 ### Hello:
 #### Greet user by asking them what their name is and outputting "Hello, `name`"
 ![Hello, world!](../screenshots/hello.png)
