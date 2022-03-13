@@ -12,7 +12,7 @@
 
 ### Hello:
 #### Greet user by asking them what their name is and outputting "Hello, `name`"
-[Hello, world!](projects/screenshots/hello.png)
+![Hello, world!](../screenshots/hello.png)
 ### Mario_Less:
 > Make a pyramid of a specified height between 1 and 8 similar to `Super Mario Bros`.'s flag jump. Like the following:
 ![Super Mario Bros. flag jump](https://cs50.harvard.edu/x/2022/psets/1/mario/less/pyramid.png)
