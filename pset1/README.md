@@ -5,18 +5,18 @@
 ## This README will explain the goals of each problem
 
 ### Cash:
-> Calculate the amount of coins a customer should recieve based on how many cents they choose in user input
+#### Calculate the amount of coins a customer should recieve based on how many cents they choose in user input
 
 ### Credit:
-> Validate a credit card using IBM's mastermind `Hans Peter Luhn`'s algorithm
+#### Validate a credit card using IBM's mastermind `Hans Peter Luhn`'s algorithm
 
 ### Hello:
-> Greet user by asking them what their name is and outputting "Hello, `name`"
-
+#### Greet user by asking them what their name is and outputting "Hello, `name`"
+![Hello, world!](projects/pictures/hello.png)
 ### Mario_Less:
 > Make a pyramid of a specified height between 1 and 8 similar to `Super Mario Bros`.'s flag jump. Like the following:
 ![Super Mario Bros. flag jump](https://cs50.harvard.edu/x/2022/psets/1/mario/less/pyramid.png)
 
 ### Mario_More:
-> Make a pyramid of a specified height between 1 and 8 similar to `Super Mario Bros`.'s 1-1 level's jump. Like the following:
+#### Make a pyramid of a specified height between 1 and 8 similar to `Super Mario Bros`.'s 1-1 level's jump. Like the following:
 ![Super Mario Bros. 1-1 level's jump](https://cs50.harvard.edu/x/2022/psets/1/mario/more/pyramids.png)
