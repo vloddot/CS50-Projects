@@ -24,13 +24,16 @@ int main(void)
     // Calculate number of years until we reach threshold
 
     int years = 0;
-    while (start_size < end_size)
+    int borners = round(start_size / 3);
+    int passers = round(end_size / 4);
+    do
     {
-        start_size += round(start_size / 3);
-        start_size -= round(start_size / 4);
-
+        start_size += borners;
+        start_size -= passers;
+        printf("Start size: %d\nEnd size: %d\n", start_size, end_size);
         years++;
-    }
+    } while (start_size < end_size);
+    
     // Print number of years
 
     printf("Years: %i\n", years);
