@@ -6,7 +6,7 @@
 
 ### Cash:
 #### Calculate the amount of coins a customer should recieve based on how many cents they choose in user input
-[Cash](projects/screenshots/cash.png)
+![Cash](../screenshots/cash.png)
 ### Credit:
 #### Validate a credit card using IBM's mastermind `Hans Peter Luhn`'s algorithm
 
