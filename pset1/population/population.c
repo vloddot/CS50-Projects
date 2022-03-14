@@ -30,7 +30,6 @@ int main(void)
     {
         start_size += borners;
         start_size -= passers;
-        printf("Start size: %d\nEnd size: %d\n", start_size, end_size);
         years++;
     } while (start_size < end_size);
     
