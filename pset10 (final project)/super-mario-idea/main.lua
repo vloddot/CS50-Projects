@@ -1,27 +1,22 @@
+-- User's current window with and height
 local WINDOW_HEIGHT = love.graphics.getHeight()
 local WINDOW_WIDTH = love.graphics.getWidth()
 
+-- Virtual width and height hard coded into game
 local VIRTUAL_HEIGHT = 1600
 local VIRTUAL_WIDTH = 1200
 
-local x = 0
-local y = 0
-
+-- Require the push library
 local push = require 'push'
 
+-- Require the class library
 require 'class'
 
-
+-- Require the player class defined in Player.lua
 require 'Player'
+
 -- love.load()
 function love.load()
-
-    -- Require the Player class into the code (yet to be made)
-
-
-    -- Require the Enemy class into the code (yet to be made)
-    -- require 'Enemy'
-
     
     -- Use nearest neighbor techniques for rendering the screen instead of linear
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -34,9 +29,10 @@ function love.load()
     })
 
     -- Set game's title as "Hello, world!"
-    love.window.setTitle("Hello, world!")
+    love.window.setTitle("Fifty Mario Bros.")
 end
 
+-- Make a player object with the mario png as its drawn picture
 local player = Player('pictures/mario.png')
 
 
@@ -65,16 +61,20 @@ function love.keypressed(key)
 end
 
 function love.keyreleased(key)
+
+    -- If any movement key was released at any moment, set player.moving to false
     if key == 'd' or key == 'a' or key == 'space' or key == 's' then
         player.moving = false
     end
 end
+
+
 -- love.draw()
 function love.draw()
 
     -- Use the push library to set where to enable the filtering
     push:start()
-
+    
     player:draw()
 
     push:finish()
