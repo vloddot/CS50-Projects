@@ -3,35 +3,36 @@ Player = Class:extend()
 function Player:init(image)
     self.x = 0
     self.y = 0
+    self.dx = 0
     self.size = 'small'
     self.image = love.graphics.newImage(image)
+    self.count = 0
+    self.moving = false
 end
 
-local count = 0
-local waiting = false
-
-function love.keyreleased(key)
-    if key == 'd' or key == 'space' or key == 'a' or key == 's' then
-        waiting = false
-        count = 0
-    end
-end
 function Player:update(dt)
+
     if love.keyboard.isDown('d') then
-        waiting = true
-        self.x = self.x + 10 * count
+        self.moving = true
+        self.dx = 10 * self.count
+        self.x = self.x + self.dx
     end
 
     if love.keyboard.isDown('a') then
-        waiting = true
-        self.x = self.x - 10 * count
+        self.moving = true
+        self.dx = 10 * self.count
+        self.x = self.x - self.dx
+    end
+
+    if self.moving == false and self.count > 0 then
+        self.count = self.count - 1 * dt
     end
 
     if love.keyboard.isDown('space') then
-        self.y = self.y - 50
     end
-    if waiting == true then
-        count = count + 1 * dt
+
+    if self.moving == true then
+        self.count = self.count + 1 * dt
     end
 end
 

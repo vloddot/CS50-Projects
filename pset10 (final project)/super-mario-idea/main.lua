@@ -7,12 +7,10 @@ local VIRTUAL_WIDTH = 1200
 local x = 0
 local y = 0
 
-push = require 'push'
+local push = require 'push'
 
 require 'class'
 
-count = 0
-waiting = false
 
 require 'Player'
 -- love.load()
@@ -66,6 +64,11 @@ function love.keypressed(key)
     end
 end
 
+function love.keyreleased(key)
+    if key == 'd' or key == 'a' or key == 'space' or key == 's' then
+        player.moving = false
+    end
+end
 -- love.draw()
 function love.draw()
 
