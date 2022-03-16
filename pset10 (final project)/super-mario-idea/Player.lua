@@ -46,15 +46,18 @@ function Player:update(dt)
     if self.moving == false and self.momentum_factor > 0 then
 
         -- Lower down momentum factor each frame
-        self.momentum_factor = self.momentum_factor - 1 * dt
+        self.momentum_factor = self.momentum_factor - 10 * dt
     end
 
     -- If the spacebar is down at any point
     if love.keyboard.isDown('space') then
     end
 
+    if love.keyboard.isDown('a') then
+        
+    end
     -- If the player is moving
-    if self.moving == true then
+    if self.moving then
 
         -- Increment momentum factor each frame
         self.momentum_factor = self.momentum_factor + 1 * dt
