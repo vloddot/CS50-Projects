@@ -4,11 +4,11 @@
 
 ## This README will explain the goals for each problem
 
-### Plurality:
+### [Plurality](./plurality/):
 #### Create a [plurality](https://en.wikipedia.org/wiki/Plurality_voting) election which is basically just a system where the candidate with the most votes wins the election
 ![Plurality](../screenshots/plurality.png)
 
-### Runoff:
+### [Runoff](./runoff/):
 #### Create a [runoff](https://en.wikipedia.org/wiki/Two-round_system) election
 > ./runoff Alice Bob Charlie
 > Number of voters: 5
@@ -44,10 +44,10 @@
 > Rank 3: Bob
 
 > Alice
-### Sort:
+### [Sort](./sort/):
 #### You're given 3 programs and you can't look at their source code, they use 3 sorting algorithms which are: Bubble Sort, Merge Sort, and Selection Sort and you have to identify them
 ![Sort](../screenshots/sort.png)
 
-### Tideman:
+### [Tideman](./tideman/):
 #### Create a [tideman](https://en.wikipedia.org/wiki/Ranked_pairs) election
 ![Tideman](../screenshots/tideman.png)
