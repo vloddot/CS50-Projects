@@ -49,4 +49,4 @@
 
 ### Tideman:
 #### Create a [tideman](https://en.wikipedia.org/wiki/Ranked_pairs) election
-![Tideman](../screensshots/tideman.png)
+![Tideman](../screenshots/tideman.png)
