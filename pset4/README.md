@@ -12,3 +12,12 @@
 
 ### Grayscale:
 > ![Normal tower.bmp](../screenshots/tower.bmp)![Grayscale tower.bmp](../screenshots/grayscale.bmp)
+
+### Sepia:
+> ![Normal stadium.bmp](../screenshots/stadium.bmp)![Sepia stadium.bmp](../screenshots/sepia.bmp)
+
+### Reflect:
+> ![Normal courtyard.bmp](../screenshots/courtyard.bmp)![Reflected courtyard.bmp](../screenshots/reflect.bmp)
+
+### Blur:
+> ![Normal yard.bmp](../screenshots/yard.bmp)![Blurred yard.bmp](../screenshots/blur.bmp)
