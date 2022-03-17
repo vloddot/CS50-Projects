@@ -11,4 +11,4 @@
 #### Apply a bunch of filters into an image chosen by the user (has to be .bmp) including grayscale, reflect, blur, and edge detection
 
 ### Grayscale:
-![Normal tower.bmp](../screenshots/tower.bmp)![Grayscale tower.bmp](../screenshots/grayscale.bmp)
+> ![Normal tower.bmp](../screenshots/tower.bmp)![Grayscale tower.bmp](../screenshots/grayscale.bmp)
