@@ -57,4 +57,4 @@
 > Finance
 
 #### [pset10](projects/pset10) `Final Project`:
-Planning to create tic tac toe using Lua with the LÖVE 2D framework (found in [https://www.love2d.org](https://www.love2d.org))
+Planning to create multiple projects using Lua with the LÖVE 2D framework (found in [https://www.love2d.org](https://www.love2d.org))
