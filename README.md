@@ -4,7 +4,7 @@
 
 ### Here is a list of all projects in these problem sets:
 
-#### [pset1](projects/pset1) `Clang`:
+#### [pset1](projects/pset1) `C`:
 > Cash,
 > Credit,
 > Hello,
