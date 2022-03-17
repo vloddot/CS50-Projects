@@ -14,12 +14,12 @@
 
 ### Scrabble:
 #### Create the [scrabble](https://en.wikipedia.org/wiki/Scrabble) game which prompts two players for text and gives a score to each player and whoever gets the higher score wins
-[Scrabble](../screenshots/scrabble.png)
+![Scrabble](../screenshots/scrabble.png)
 
 ### Substitution:
 #### Use ASCII characters to make a higher-up version of the caesar cipher in which a user gives a key as an argument and enters the plain text, and what gets outputted is the plain text characters swapped with its alphabetical characters in the key provided by the user
-[Substitution](../screenshots/substitution.png)
+![Substitution](../screenshots/substitution.png)
 
 ### Wordle:
 #### Create the [wordle](https://www.nytimes.com/games/wordle/index.html) game in which players guess a random 5-8 letter word
-[Wordle](../screenshots/wordle.png)
+![Wordle](../screenshots/wordle.png)
