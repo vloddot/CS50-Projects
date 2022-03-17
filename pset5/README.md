@@ -6,7 +6,7 @@
 
 ### [Inheritance](./inheritance/):
 #### Simulate inheritance with blood types and generations
-![Inheritance](../screenshots/inheritance.bmp)
+![Inheritance](../screenshots/inheritance.png)
 
 ### [Speller](./speller/):
 #### Implement a spell checker (not complete)
