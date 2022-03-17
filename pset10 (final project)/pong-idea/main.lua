@@ -10,6 +10,9 @@ require 'Paddle'
 -- Load in the ball class (found in Ball.lua)
 require 'Ball'
 
+-- The number of players the user chooses
+local player_number = 0
+
 -- The size of our actual window
 local const WINDOW_WIDTH = 1280
 local const WINDOW_HEIGHT = 720
@@ -129,6 +132,27 @@ function love.keypressed(key)
                 player1.serving = true
                 player2.serving = false
             end
+        end
+    end
+
+    if key == 'up' and gameState == 'start' and player_number < 2 and player_number > 0 then
+        player_number = player_number + 1
+        if player_number < 0 then
+            player_number = 0
+
+        elseif player_number > 2 then
+            player_number = 2
+        end
+    end
+
+
+    if key == 'down' and gameState == 'start' then
+        player_number = player_number - 1
+        if player_number < 0 then
+            player_number = 0
+
+        elseif player_number > 2 then
+            player_number = 2
         end
     end
 end
@@ -323,6 +347,8 @@ function love.draw()
         love.graphics.setFont(fonts['small'])
         love.graphics.printf("This is Pong!", 0, 10, VIRTUAL_WIDTH, 'center')
         love.graphics.printf("Choose options and press \"Enter\" to begin!", 0, 20, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf("Number of players (change using up and down arrow keys)", 0, 30, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf(player_number, 0, 40, VIRTUAL_WIDTH, 'center')
         -- love.graphics.rectangle('line', 200, 290, 70, 80)
     elseif gameState == 'serving' then
         love.graphics.setFont(fonts['small'])
