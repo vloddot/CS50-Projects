@@ -21,3 +21,6 @@
 
 ### Blur:
 > ![Normal yard.bmp](../screenshots/yard.bmp)![Blurred yard.bmp](../screenshots/blur.bmp)
+
+### Edges:
+> ![Normal tower.bmp](../screenshots/tower.bmp)![Edge detected tower.bmp](../screenshots/edges.bmp)
