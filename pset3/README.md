@@ -46,6 +46,7 @@
 > Alice
 ### Sort:
 #### You're given 3 programs and you can't look at their source code, they use 3 sorting algorithms which are: Bubble Sort, Merge Sort, and Selection Sort and you have to identify them
+![Sort](../screenshots/sort.png)
 
 ### Tideman:
 #### Create a [tideman](https://en.wikipedia.org/wiki/Ranked_pairs) election
