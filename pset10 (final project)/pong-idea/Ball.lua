@@ -1,9 +1,5 @@
 Ball = Class:extend()
 
--- Window height and width
-local const WINDOW_HEIGHT = love.graphics.getHeight()
-local const WINDOW_WIDTH = love.graphics.getWidth()
-
 -- Virtual height and virtual width
 local const VIRTUAL_HEIGHT = 432
 local const VIRTUAL_WIDTH = 243

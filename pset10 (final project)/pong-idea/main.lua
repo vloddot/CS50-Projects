@@ -11,11 +11,11 @@ require 'Paddle'
 require 'Ball'
 
 -- The number of players the user chooses
-local player_number = 0
+local player_count = 0
 
 -- The size of our actual window
-local const WINDOW_WIDTH = 1280
-local const WINDOW_HEIGHT = 720
+local const WINDOW_WIDTH = love.graphics.getWidth()
+local const WINDOW_HEIGHT = love.graphics.getHeight()
 
 -- The size of the virtual width and virtual height to use the push library to load them easily without much frustration
 local const VIRTUAL_WIDTH = 432
@@ -37,18 +37,25 @@ local servingPlayer = 1
 -- Create a winning player variable that's initially set to 0 because no one won at that point of the game
 local winningPlayer = 0
 
--- Fonts table to load in inside of love.draw() of 3 sizes (8, 16, and 32)
+-- Fonts table to load inside of love.draw() of 3 sizes (8, 16, and 32)
 local fonts = {
     ['small'] = love.graphics.newFont("font.ttf", 8),
     ['medium'] = love.graphics.newFont("font.ttf", 16),
     ['large'] = love.graphics.newFont("font.ttf", 32)
 }
 
--- local sounds = {
---     ['paddle_hit'],
---     ['score'],
---     ['wall_hit']
--- }
+-- Sounds table to load inside of love.update(dt) for example, when the player hits the wall, we play paddle_hit and when the ball's X is past the virtual width, we play score, and when the ball hits either of the top or bottom walls, we play wall_hit
+local sounds = {
+    ['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
+    ['score'] = love.audio.newSource('sounds/score.wav', 'static'),
+    ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static')
+}
+
+-- Boolean value to check if the user wants the FPS to be shown or not
+local fps = false
+
+-- Boolean value to check if the user wants the X and Y coordinates to be shown or not
+local coordinates = false
 
 -- Set the current gamestate to be the start state
 local gameState = 'start'
@@ -95,10 +102,32 @@ function love.keypressed(key)
     -- Quit the game
     if key == 'escape' then
         love.event.quit(0)
+
+    -- Restart the game
+    elseif key == 'r' then
+        love.event.quit('restart')
+    end
+
+    -- Toggle showing FPS
+    if key == 'f' then
+        if fps then
+            fps = false
+        else
+            fps = true
+        end
+    end
+
+    -- Toggle showing X and Y coordinates for mouse
+    if key == 'x' then
+        if coordinates then
+            coordinates = false
+        else
+            coordinates = true
+        end
     end
 
     --[[
-        Enter multiple states based on 1 button
+        Enter multiple states based on 1 button (return)
 
         If the gamestate is start then set gamestate to be serving,
         If the gamestate is serving then set the gamestate to be play,
@@ -111,49 +140,61 @@ function love.keypressed(key)
                 set the serve to be player 1
     ]]
     if key == 'return' then
+        -- If the gamestate is the start state
         if gameState == 'start' then
-            gameState = 'serving'
 
+            -- Set gamestate to be the serving state
+            gameState = 'serving'
+        
+        -- If the gamestate is serving
         elseif gameState == 'serving' then
+
+            -- Set gamestate to be play
             gameState = 'play'
 
+        -- If the gamestate is the done state
         elseif gameState == 'done' then
+
+            -- Set the gamestate to be the serving state
             gameState = 'serving'
             
+            -- Reset the ball's X and Y values
             ball:reset()
 
+            -- Reset scores
             player1.score = 0
             player2.score = 0
 
+            -- If player 1 won
             if player1.won then
+
+                -- Set player 2 to serve
                 player2.serving = true
                 player1.serving = false
+
+            -- Else (player 2 won)
             else
+
+                -- Set player 1 to serve
                 player1.serving = true
                 player2.serving = false
             end
         end
     end
 
-    if key == 'up' and gameState == 'start' and player_number < 2 and player_number > 0 then
-        player_number = player_number + 1
-        if player_number < 0 then
-            player_number = 0
+    -- These two are for changing the number of players the user wants
 
-        elseif player_number > 2 then
-            player_number = 2
-        end
-    end
+    -- If the user entered 'up arrow'
+    if key == 'up' and gameState == 'start' and player_count <= 1 and player_count >= 0 then
 
+        -- Increment player count by 1
+        player_count = player_count + 1
+    
+    -- If the user entered 'down arrow'
+    elseif key == 'down' and gameState == 'start' and player_count <= 2 and player_count > 0 then
 
-    if key == 'down' and gameState == 'start' then
-        player_number = player_number - 1
-        if player_number < 0 then
-            player_number = 0
-
-        elseif player_number > 2 then
-            player_number = 2
-        end
+        -- Decrement player count by 1
+        player_count = player_count - 1
     end
 end
 
@@ -165,112 +206,263 @@ end
 ]]
 function love.update(dt)
 
-    -- Player 1 movement
-    if love.keyboard.isDown("w") then
-        player1.dy = -PADDLE_SPEED
+    --[[
+        If there is 1 player to play
+        Set an AI and a player
+    ]]
+    if player_count == 1 then
 
-    elseif love.keyboard.isDown("s") then
-        player1.dy = PADDLE_SPEED
+        -- AI movement
+        if player1.y < ball.y then
+            player1.dy = PADDLE_SPEED - 100
 
+        elseif player1.y > ball.y then
+            player1.dy = -PADDLE_SPEED + 100
+        else
+            player1.dy = 0
+        end
+
+        -- Player 2 movement
+        if love.keyboard.isDown("up") then
+            player2.dy = -PADDLE_SPEED
+    
+        elseif love.keyboard.isDown("down") then
+            player2.dy = PADDLE_SPEED
+        else
+            player2.dy = 0
+        end
+    --[[
+        If there are 2 players to play
+        Set two players
+    ]]
+    elseif player_count == 2 then
+
+        -- Player 1 movement
+        if love.keyboard.isDown("w") then
+            player1.dy = -PADDLE_SPEED
+
+        elseif love.keyboard.isDown("s") then
+            player1.dy = PADDLE_SPEED
+
+        else
+            player1.dy = 0
+        end
+
+        -- Player 2 movement
+        if love.keyboard.isDown("up") then
+            player2.dy = -PADDLE_SPEED
+
+        elseif love.keyboard.isDown("down") then
+            player2.dy = PADDLE_SPEED
+
+        else
+            player2.dy = 0
+        end
+    
+    --[[
+        Else (player_number == 0)
+        Set two AIs
+    ]]
     else
-        player1.dy = 0
+
+        -- AI 1 movement
+        if player1.y < ball.y then
+            player1.dy = PADDLE_SPEED
+
+        elseif player1.y > ball.y then
+            player1.dy = -PADDLE_SPEED
+        else
+            player1.dy = 0
+        end
+
+        -- AI 2 movement
+        if player2.y < ball.y then
+            player2.dy = PADDLE_SPEED
+
+        elseif player2.y > ball.y then
+            player2.dy = -PADDLE_SPEED
+        else
+            player2.dy = 0
+        end
     end
 
-    -- Player 2 movement
-    if love.keyboard.isDown("up") then
-        player2.dy = -PADDLE_SPEED
-
-    elseif love.keyboard.isDown("down") then
-        player2.dy = PADDLE_SPEED
-
-    else
-        player2.dy = 0
-    end
-
+    
+    -- If the gamestate is serving
     if gameState == 'serving' then
 
+        -- Set the ball's delta Y to be a random number between -50 and 50
         ball.dy = math.random(-50, 50)
+
+        -- If player 1 is serving
         if player1.serving then
+
+            -- Set the ball's delta X to be a random number between 140 and 200
             ball.dx = math.random(140, 200)
+        
+        -- Else (player 2 is serving)
         else
+
+            -- Set the ball's delta X to be a random number between -140 and -200
             ball.dx = -math.random(140, 200)
         end
         
+    -- If the gamestate is play
     elseif gameState == 'play' then
 
+        -- If the ball collides with player 1
         if ball:collides(player1) then
+
+            -- Multiply ball's delta X by 1.03 and push it in the other direction
             ball.dx = -ball.dx * 1.03
+
+            -- Move the ball away from the player so that it doesn't re-collide
             ball.x = player1.x + 5
 
+            -- If the ball's delta Y is less than 0
             if ball.dy < 0 then
+
+                -- Set the ball's delta Y to be a random number from -10 to -150
                 ball.dy = -math.random(10, 150)
+
+            -- Else (delta Y is bigger than or equals 0)
             else
+
+                -- Set the ball's delta Y to be a random number from 10 to 150
                 ball.dy = math.random(10, 150)
             end
 
+            -- Play the paddle_hit sound
+            sounds['paddle_hit']:play()
+        
+        -- If the ball collides with player 2
         elseif ball:collides(player2) then
+
+            -- Multiply ball's delta X by 1.03 and push it in the other direction
             ball.dx = -ball.dx * 1.03
+
+            -- Move the ball away from the player so that it doesn't re-collide
             ball.x = player2.x - 4
 
+            -- If the ball's delta Y is less than 0
             if ball.dy < 0 then
+
+                -- Set the ball's delta Y to be a random number between -10 and -150
                 ball.dy = -math.random(10, 150)
+
+            -- Else (ball's delta Y is bigger than or equals 0)
             else
+
+                -- Set the ball's delta Y to be a random number between 10 and 150
                 ball.dy = math.random(10, 150)
             end
+
+            -- Play the paddle_hit sound
+            sounds['paddle_hit']:play()
         end
 
+        -- If the ball's Y is less than or equals 0 (meaning ball hit the top of the screen)
         if ball.y <= 0 then
+
+            -- Reset ball's y to 0
             ball.y = 0
+
+            -- Reverse ball's delta Y
             ball.dy = -ball.dy
+
+            -- Play the wall_hit sound
+            sounds['wall_hit']:play()
         end
 
+        -- If the ball's Y is less than or equals the height of the virtual screen and -4 to accommodate for the ball's size
         if ball.y >= VIRTUAL_HEIGHT - 4 then
+
+            -- Reset ball's Y to equal the height of the virtual screen and -4 to accommodate for the ball's size
             ball.y = VIRTUAL_HEIGHT - 4
+
+            -- Reverse ball's delta Y
             ball.dy = -ball.dy
+
+            -- Play the wall_hit sound
+            sounds['wall_hit']:play()
         end
 
+        -- If the ball went past the edge of the screen in player 1's side
         if ball.x < 0 then
+
+            -- Player 1 serves
             player1.serving = true
+
+            -- Increment player score
             player2.score = player2.score + 1
 
+            -- If player 2's score is 10 (meaning player 2 won)
             if player2.score == 10 then
+
+                -- Player 2 won
                 player2.won = true
+
+                -- Set gamestate to be done
                 gameState = 'done'
+
+            -- Else (score is less than 10)
             else
+
+                -- Set gamestate to be serving
                 gameState = 'serving'
+
+                -- Reset ball's X and Y
                 ball:reset()
             end
+
+            -- Play the score sound
+            sounds['score']:play()
         end
 
+        -- If the ball want past the edge of the screen in player 2's side
         if ball.x > VIRTUAL_WIDTH then
+
+            -- Player 2 serves
             player2.serving = true
+
+            -- Increment player 1's score
             player1.score = player1.score + 1
 
+            -- If player 1's score is 10 (meaning player 1 won)
             if player1.score == 10 then
+
+                -- Player 2 won
                 player1.won = true
+
+                -- Set gamestate to be done
                 gameState = 'done'
 
+            -- Else (Player 1's score is less than 10)
             else
+                -- Set gamestate to be serving
                 gameState = 'serving'
+
+                -- Reset the ball's X and Y
                 ball:reset()
             end
         end
     end
 
 
-    -- Set the serving player variable to be the current serving player
+    -- Set the servingPlayer variable to be the current serving player
     if player1.serving then
         servingPlayer = 1
     else
         servingPlayer = 2
     end
 
+    -- Set the winningPlayer variable to be the player that won
     if player1.won then
         winningPlayer = 1
-
     else
         winningPlayer = 2
     end
+
+
     -- Call the paddle update functions found in Paddle.lua
     player1:update(dt)
     player2:update(dt)
@@ -279,10 +471,6 @@ function love.update(dt)
     if gameState == 'play' then
         ball:update(dt)
     end
-
-    -- 2 functions should be added in turn to ask the user if he wants one player, two players, or just AI players playing
-    -- AI1:update(dt)
-    -- AI2:update(dt)
 end
 
 --[[
@@ -308,7 +496,7 @@ local function displayMouseLocation()
     -- Use the small font from the fonts table
     love.graphics.setFont(fonts['small'])
 
-    -- Print X and Y positions for mouse
+    -- Print X and Y positions for mouse at (10, 20) and (10, 30)
     love.graphics.print("X: " .. love.mouse.getX(), 10, 20)
     love.graphics.print("Y: " .. love.mouse.getY(), 10, 30)
 end
@@ -343,27 +531,73 @@ function love.draw()
     -- Set the background to be these special color values 40 for R, 45 for G, 52 for B, 255 for A
     love.graphics.clear(40/255, 45/255, 52/255, 255/255)
 
+    -- UI Messages are in this chain of if, elseif
     if gameState == 'start' then
+
+        -- Use the small font from the fonts table
         love.graphics.setFont(fonts['small'])
+
+        -- Print "This is pong!"
         love.graphics.printf("This is Pong!", 0, 10, VIRTUAL_WIDTH, 'center')
+
+        -- Print "Choose options and press \"Enter\" to begin!"
         love.graphics.printf("Choose options and press \"Enter\" to begin!", 0, 20, VIRTUAL_WIDTH, 'center')
-        love.graphics.printf("Number of players (change using up and down arrow keys)", 0, 30, VIRTUAL_WIDTH, 'center')
-        love.graphics.printf(player_number, 0, 40, VIRTUAL_WIDTH, 'center')
-        -- love.graphics.rectangle('line', 200, 290, 70, 80)
+
+        -- If the player count is bigger than 0
+        if player_count > 0 then
+
+            -- Print "Number of players (change using up and down arrow keys)"
+            love.graphics.printf("Number of players (change using up and down arrow keys)", 0, 30, VIRTUAL_WIDTH, 'center')
+        -- Else (player count is 0)
+        else
+            -- Print "Number of players (change using up and down arrow keys, using 2 AIs is broken)"
+            love.graphics.printf("Number of players (change using up and down arrow keys, using 2 AIs is broken)", 0, 30, VIRTUAL_WIDTH, 'center')
+        end
+
+        -- Print the player count
+        love.graphics.printf(player_count, 0, 40, VIRTUAL_WIDTH, 'center')
+
+        -- Print "Press \"Escape\" to quit the game at any time"
+        love.graphics.printf("Press \"Escape\" to quit the game at any time", 0, 50, VIRTUAL_WIDTH, 'center')
+
+        -- Print "Press \"r\" to restart the game at any time"
+        love.graphics.printf("Press \"r\" to restart the game at any time", 0, 60, VIRTUAL_WIDTH, 'center')
+
+        -- Print "Press \"f\" to toggle FPS display"
+        love.graphics.printf("Press \"f\" to toggle FPS display", 0, 70, VIRTUAL_WIDTH, 'center')
+
+        -- Print "Press \"x\" to toggle coordinates display"
+        love.graphics.printf("Press \"x\" to toggle coordinates display", 0, 80, VIRTUAL_WIDTH, 'center')
+
     elseif gameState == 'serving' then
+
+        -- Use the small font from the fonts table
         love.graphics.setFont(fonts['small'])
+
+        -- Print the current serving player
         love.graphics.printf("Player " .. servingPlayer .. "'s serve!", 0, 10, VIRTUAL_WIDTH, 'center')
+
+        -- Print "Press \"Enter\" to serve!"
         love.graphics.printf("Press \"Enter\" to serve!", 0, 20, VIRTUAL_WIDTH, 'center')
 
     elseif gameState == 'play' then
         -- No UI messages to send
 
     elseif gameState == 'done' then
+
+        -- Use the medium font from the fonts table
         love.graphics.setFont(fonts['medium'])
+
+        -- Print the winning player
         love.graphics.printf("Player " .. winningPlayer .. " wins!", 0, 10, VIRTUAL_WIDTH, 'center')
+
+        -- Use the small font from the fonts table
         love.graphics.setFont(fonts['small'])
+
+        -- Print "Press \"Enter\" to restart"
         love.graphics.printf("Press \"Enter\" to restart!", 0, 30, VIRTUAL_WIDTH, 'center')
     end
+
     -- Call the paddle draw functions to display the two paddles on the screen
     player1:draw()
     player2:draw()
@@ -371,14 +605,18 @@ function love.draw()
     -- Call the ball draw functions to display the ball on the screen
     ball:draw()
 
-    -- Display the FPS at location 10, 10
-    displayFPS()
+    -- Display the FPS at location 10, 10 if the user wants to display FPS
+    if fps then
+        displayFPS() 
+    end
 
     -- Display both players' scores
     displayScore()
 
-    -- Display current mouse's X and Y coordinates at locations 10, 20 and 10, 30
-    displayMouseLocation()
+    -- Display current mouse's X and Y coordinates at locations 10, 20 and 10, 30 if the user wants to display them
+    if coordinates then
+        displayMouseLocation()
+    end
 
     -- End the push library's code
     push:finish()
