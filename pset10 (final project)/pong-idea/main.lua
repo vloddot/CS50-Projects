@@ -607,7 +607,7 @@ function love.draw()
 
     -- Display the FPS at location 10, 10 if the user wants to display FPS
     if fps then
-        displayFPS() 
+        displayFPS()
     end
 
     -- Display both players' scores
