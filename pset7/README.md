@@ -8,7 +8,7 @@
 #### Investigate a crime scene in which the CS50 duck was stolen using SQLite commands (not complete)
 
 ### [Movies](./movies/):
-#### Use IMDB's SQLite database to make a bunch of special queries about movies (not complete)
+#### Use IMDB's SQLite database to make a bunch of special queries about movies
 
 ### [Songs](./songs/):
 #### Use Spotify's SQLite database to make a bunch of special queries about songs
