@@ -511,10 +511,10 @@ local function displayScore()
     love.graphics.setFont(fonts['large'])
 
     -- Print player 1's score
-    love.graphics.print(player1.score, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
+    love.graphics.print(player1.score, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3 + 10)
     
     -- Print player 2's score
-    love.graphics.print(player2.score, VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
+    love.graphics.print(player2.score, VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3 + 10)
 end
 --[[
     love.draw()

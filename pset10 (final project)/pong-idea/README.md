@@ -1,0 +1,3 @@
+# Pong
+#### Video Demo: https://youtu.be/LlglFdLY2fs
+#### Description: This is a recreation of the video game Pong made in 1972 for the Atari 2600 made in Lua using the LÖVE 2D framework. I created support for 0, 1, and 2 players. (though 0 players is a little bit broken) I also added support for toggling settings like showing FPS and current mouse location using f and x keys respectively, this project was built from scratch with a little inspiration from CS50G's first project
