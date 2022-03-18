@@ -9,4 +9,4 @@
 ![Inheritance](../screenshots/inheritance.png)
 
 ### [Speller](./speller/):
-#### Implement a spell checker (not complete)
+#### Implement a spell checker
