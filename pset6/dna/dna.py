@@ -1,38 +1,93 @@
 import csv
 import sys
 
-STRs = []
-fields = []
-longest_strs = []
+
 def main():
 
     # Check for command-line usage
     if len(sys.argv) != 3:
-        print('Usage: python dna.py database sequence')
-        return
+
+        # Print error message to user
+        print("Usage: python3 database sequence")
+
+        # Exit with error code 1
+        sys.exit(1)
+
+    # A people list that will contain dictionaries
+    people = []
 
     # Read database file into a variable
+
+    # Open database file
     with open(sys.argv[1]) as file:
+
+        # Declare a dict reader and set it to reader variable
         reader = csv.DictReader(file)
-        fields = reader.fieldnames
+
+        # For each row in the reader
         for row in reader:
-            STRs.append(row[])
+
+            # Append the row to the people list of dictionaries
+            people.append(row)
+
+        # Set STRs to be the names of STRs in fieldnames[1:end of list]
+        STRs = reader.fieldnames[1:]
+
+    # Declare a DNA string
+    dna = ""
 
     # Read DNA sequence file into a variable
+
+    # Open DNA sequence file
     with open(sys.argv[2]) as file:
+
+        # Put the contents of the DNA sequence file into the DNA string variable
         dna = file.read()
 
+    # Declare a dictionary called longest_strs to store the STRs of the DNA sequence
+    longest_strs = {}
+
     # Find longest match of each STR in DNA sequence
-    for i in range(len(fields) - 1):
-        longest_strs.append(longest_match(dna, fields[i + 1]))
 
-    for i in range(len(fields) - 1):
-        with open(sys.argv[1]) as file:
-            if longest_strs[i] == STRs[i]["{fields[i + 1]}"]:
-                reader = csv.DictReader(file)
-                print(f"{reader['name']}")
-                return
+    # For each dictionary in the people list
+    for dict in people:
 
+        # For each STR in the STRs list
+        for STR in STRs:
+
+            # Check for the longest match of the current DNA subsequence in the DNA sequence (i.e., 'AGATC') and put it in the longest_strs dictionary
+            longest_strs[STR] = longest_match(dna, STR)
+
+    # Check database for matching profiles
+
+    # Declare a count variable and set it equal to 0
+    count = 0
+
+    # For each dictionary in the people list
+    for dict in people:
+
+        # For each STR in the STRs list
+        for STR in STRs:
+
+            # If the current longest STR count equals the current dict's STR count
+            if longest_strs[STR] == int(dict[STR]):
+
+                # Increment count by 1
+                count += 1
+
+            # If all the STRs match
+            if count == len(STRs):
+
+                # Print the current person
+                print(dict['name'])
+
+                # Exit with 0 (successful)
+                sys.exit(0)
+
+        # Reset count to 0
+        count = 0
+
+    # Print "No match" if no one matched the STR counts
     print("No match")
 
 
@@ -74,4 +129,5 @@ def longest_match(sequence, subsequence):
     return longest_run
 
 
-main()
+if __name__ == '__main__':
+    main()
