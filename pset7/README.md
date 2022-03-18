@@ -5,10 +5,10 @@
 ## This README will explain each problem of this problem set
 
 ### [Fiftyville](./fiftyville/):
-#### Investigate a crime scene in which the CS50 duck was stolen using SQLite commands
+#### Investigate a crime scene in which the CS50 duck was stolen using SQLite commands (not complete)
 
 ### [Movies](./movies/):
-#### Use IMDB's SQLite database to make a bunch of special queries about movies
+#### Use IMDB's SQLite database to make a bunch of special queries about movies (not complete)
 
 ### [Songs](./songs/):
 #### Use Spotify's SQLite database to make a bunch of special queries about songs
