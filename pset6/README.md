@@ -5,7 +5,7 @@
 ## This README will explain the goals of each problem
 
 ### [DNA](./dna/):
-#### Compare DNA sequences with each other (not complete)
+#### Compare DNA sequences with each othe
 
 ### [Cash](./sentimental-cash/):
 #### Calculate the amount of coins a customer should recieve based on how many cents they choose in user input
