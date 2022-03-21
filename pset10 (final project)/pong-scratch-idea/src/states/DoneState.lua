@@ -1,0 +1,1 @@
+DoneClass = Class{__includes = BaseState}

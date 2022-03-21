@@ -166,7 +166,7 @@ function love.keypressed(key)
             player2.score = 0
 
             -- If player 1 won
-            if player1.won then
+            if winningPlayer == 1 then
 
                 -- Set player 2 to serve
                 player2.serving = true
@@ -444,6 +444,8 @@ function love.update(dt)
                 -- Reset the ball's X and Y
                 ball:reset()
             end
+
+            sounds['score']:play()
         end
     end
 
@@ -461,7 +463,6 @@ function love.update(dt)
     else
         winningPlayer = 2
     end
-
 
     -- Call the paddle update functions found in Paddle.lua
     player1:update(dt)

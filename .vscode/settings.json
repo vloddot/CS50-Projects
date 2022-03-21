@@ -5,6 +5,13 @@
     ],
     "Lua.workspace.checkThirdParty": false,
     "Lua.diagnostics.globals": [
-        "class"
+        "class",
+        "push",
+        "gSounds",
+        "displayFPS",
+        "gFonts",
+        "gStateMachine",
+        "StateMachine",
+        "DoneState"
     ]
 }
