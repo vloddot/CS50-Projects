@@ -2,7 +2,7 @@ StateMachine = Class{}
 
 function StateMachine:init(states)
 	self.empty = {
-		draw = function() end,
+		render = function() end,
 		update = function() end,
 		enter = function() end,
 		exit = function() end
@@ -22,6 +22,6 @@ function StateMachine:update(dt)
 	self.current:update(dt)
 end
 
-function StateMachine:draw()
-	self.current:draw()
+function StateMachine:render()
+	self.current:render()
 end

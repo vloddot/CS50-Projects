@@ -2,10 +2,14 @@ require 'src/Dependencies'
 
 local fps = false
 
+local coordinates = false
+
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
     math.randomseed(os.time())
+
+    love.window.setTitle('Pong!')
 
     gFonts = {
         ['small'] = love.graphics.newFont('fonts/font.ttf', 8),
@@ -33,6 +37,8 @@ function love.load()
     }
 
     gStateMachine:change('start')
+
+    love.keyboard.keysPressed = {}
 end
 
 function love.resize(w, h)
@@ -41,6 +47,8 @@ end
 
 function love.update(dt)
     gStateMachine:update(dt)
+    
+    love.keyboard.keysPressed = {}
 end
 
 --[[
@@ -50,32 +58,50 @@ end
 ]]
 function love.keypressed(key)
 
+    love.keyboard.keysPressed[key] = true
+
     -- Show FPS
     if key == 'f' then
         fps = true
     end
 
     -- Quit the game
-    if key == 'esacpe' then
+    if key == 'escape' then
         love.event.quit(0)
     end
+
+    if key == 'x' then
+        coordinates = true
+    end
+end
+
+function love.keyboard.wasPressed(key)
+    return love.keyboard.keysPressed[key]
+end
+local function displayFPS()
+    love.graphics.setFont(gFonts['small'])
+    love.graphics.print('FPS: ' .. love.timer.getFPS(), 5, 10)
+end
+
+local function displayMouseLocation()
+    love.graphics.setFont(gFonts['small'])
+    love.graphics.print('X: ' .. love.mouse.getX(), 5, 20)
+    love.graphics.print('Y: ' .. love.mouse.getY(), 5, 30)
 end
 function love.draw()
     push:start()
     
     love.graphics.clear(40/255, 45/255, 52/255, 255/255)
 
-    -- gStateMachine:draw()
+    gStateMachine:render()
 
     if fps then
         displayFPS()
     end
 
-    push:finish()
-end
+    if coordinates then
+        displayMouseLocation()
+    end
 
-local function displayFPS()
-    love.graphics.setFont(gFonts['small'])
-    love.graphics.setColor(0/255, 255/255, 0/255, 255/255)
-    love.graphics.print('FPS: ' .. love.timer.getFPS(), 5, 5)
+    push:finish()
 end
