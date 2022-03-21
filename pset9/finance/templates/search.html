@@ -3,6 +3,7 @@
 {% block title %}
     Quoted
 {% endblock %}
+
 {% block main %}
-    <p> A share of {{ name }} ({{ symbol }}) costs ${{ price }}</p>
+    <p> A share of {{ name }} ({{ symbol }}) costs ${{ '%0.2f' | format(price) }}</p>
 {% endblock %}

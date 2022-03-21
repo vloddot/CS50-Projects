@@ -64,9 +64,9 @@ def after_request(response):
 def index():
     total = list()
     """Show portfolio of stocks"""
-    # The following list of lines get data from the quotes SQL table
-    quotes = db.execute("SELECT * FROM quotes WHERE id = ?", session["user_id"])
-    quote_count = len(quotes)
+
+    # The following line gets data from the quotes table in SQLite3
+    quotes = db.execute("SELECT DISTINCT name, symbol, price, shares FROM quotes WHERE user_id = ?", session["user_id"])
 
     # The following line returns the amount of cash the user has
     cash_list = db.execute("SELECT cash FROM users WHERE id = ?", session["user_id"])
@@ -75,7 +75,10 @@ def index():
 
     cash = cash_list[0]["cash"]
 
-    return render_template("index.html", quote_count=quote_count, cash=cash, quotes=quotes)
+    for i in range(len(quotes)):
+        quotes[i]['total'] = quotes[i]['price'] * quotes[i]['shares']
+
+    return render_template("index.html", cash=cash, quotes=quotes)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -83,28 +86,49 @@ def index():
 def buy():
     """Buy shares of stock"""
     if request.method == "POST":
+
         # Get the inputted symbol and the shares
         symbol = request.form.get("symbol")
         shares = request.form.get("shares")
 
-        # If the user did not input a symbol return an apology to the user
+        # If the user did not input a symbol
         if not symbol:
+
+            # Return an error to the user
             return apology("Input a symbol")
 
-        # If the user did not input shares set shares to be 1
+        # If the user did not input any value for shares
         if not shares:
-            shares = "1"
+
+            # Return an error to the user
+            return apology("Enter an amount of shares")
+
+        # Try except blocks in case the shares value is a float, string, etc.
+        try:
+
+            # Change shares' data type to integer
+            shares = int(shares)
+
+        # In case the shares property is not integer
+        except ValueError:
+
+            # Return an error to the user
+            return apology("Invalid number of shares")
+
+        # If shares entered are from minus infinity to 0
+        if shares <= 0:
+
+            # Return an error to the user
+            return apology("Invalid number of shares")
 
         # Look for the inputted symbol
         quote_search = lookup(symbol)
 
-        # If it's not possible to find the inputted symbol return an apology to the user
-        if quote_search == None:
-            return apology("Failed to find symbol")
+        # If it's not possible to find the inputted symbol
+        if not quote_search:
 
-        # If the user entered shares from minus infinity to 0 return an apology to the user
-        if int(shares) <= 0:
-            return apology("Invalid number of shares")
+            # Return an error to the user
+            return apology("Failed to find symbol")
 
         # Get the name and price of the quote the user is searching
         name = quote_search["name"]
@@ -113,22 +137,31 @@ def buy():
         # Get the cash from the current user (as a list)
         cash_list = db.execute("SELECT cash FROM users WHERE id = ?", session["user_id"])
 
-        # If there are more or less elements in the SQL query than intended return an apology to the user
+        # If there are more or less elements in the SQL query than intended
         if len(cash_list) != 1:
+
+            # Return an error to the user
             return apology("Could not read cash value")
 
-        # Set cash to a new variable as an int
+        # Set cash to a new variable as a float
         cash = cash_list[0]["cash"]
 
-        # If the cash is less than the amount of shares times the price return an apology to the user
+        # If the cash is less than the amount of shares times the price
         if cash < (price * int(shares)):
+
+            # Return an error to the user
             return apology("You cannot afford this stock")
 
-        # Update the user's cash and quotes to render them later
-        db.execute("UPDATE users SET cash = cash - ? WHERE id = ?", price * int(shares), session["user_id"])
-        db.execute("INSERT INTO quotes (name, price, symbol, shares) VALUES (?, ?, ?, ?)", name, price, quote_search['symbol'], shares)
+        quotes = db.execute("SELECT * FROM quotes WHERE user_id = ?", session['user_id'])
 
-        # Render a success.html file saying that the buying was successful
+        # Update the user's cash and quotes to render them later
+        db.execute("UPDATE users SET cash = cash - ? WHERE id = ?", price * shares, session["user_id"])
+        db.execute("INSERT INTO quotes (user_id, name, price, symbol, shares) VALUES (?, ?, ?, ?, ?)",
+                   session['user_id'], name, price, quote_search['symbol'], shares)
+        db.execute("INSERT INTO transactions (user_id, type, symbol, price, shares, name) VALUES (?, ?, ?, ?, ?, ?)",
+                   session['user_id'], 'buy', symbol, price, shares, name)
+
+        # Render the homepage
         return redirect("/")
 
     else:
@@ -139,7 +172,9 @@ def buy():
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+
+    transactions = db.execute("SELECT * FROM transactions WHERE user_id = ?", session['user_id'])
+    return render_template("history.html", transactions=transactions)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -195,17 +230,31 @@ def quote():
     """Get stock quote."""
     # If the request method is post, lookup the database for the symbols inside the database
     if request.method == "POST":
+
+        # Get the inputted symbol from the user
         symb_input = request.form.get("symbol")
+
+        # If user didn't input a symbol
         if not symb_input:
+
+            # Return an error to the user
             return apology("Input a symbol")
 
+        # Look up for the quote the user entered
         quote_search = lookup(symb_input)
-        if quote_search == None:
+
+        # If the quote doesn't exist
+        if not quote_search:
+
+            # Return an error to the user
             return apology("Failed to find symbol")
 
+        # Define variables for each of the data points of the quote
         name = quote_search["name"]
         price = quote_search["price"]
         symbol = quote_search["symbol"]
+
+        # Return the search.html template with values passed in
         return render_template("search.html", name=name, price=price, symbol=symbol)
     else:
 
@@ -262,4 +311,124 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+
+    # If the request method is POST
+    if request.method == "POST":
+
+        # Get shares and symbol from user
+        shares = request.form.get("shares")
+        symbol = request.form.get("symbol")
+
+        # If user didn't write anything in the shares box
+        if not shares:
+
+            # Return an error to the user
+            return apology("Enter shares")
+
+        # If user didn't write anything in the symbol box
+        if not symbol:
+
+            # Return an error to the user
+            return apology("Enter symbol")
+
+        # Look up the database for that stock symbol
+        quote_search = lookup(symbol)
+
+        # If there is no stock symbol found in the database
+        if not quote_search:
+
+            # Return an error to the user
+            return apology("Failed to find quote")
+
+        # Try converting shares to int
+        try:
+
+            # Convert shares to int
+            shares = int(shares)
+
+        # Except (coversion failed)
+        except ValueError:
+
+            # Return an error to the user
+            return apology("Invalid shares")
+
+        # If the shares are less than 1
+        if shares < 1:
+
+            # Return an error to the user
+            return apology("Invalid shares")
+
+        # Get the price from the quote search
+        price = quote_search['price']
+
+        # Get the amount of shares in the chosen stock symbol
+        symb_shares_list = db.execute("SELECT shares FROM quotes WHERE user_id = ? AND symbol = ?", session['user_id'], symbol)
+
+        # If something went wrong with finding the shares
+        if len(symb_shares_list) != 1:
+
+            # Return an error to the user
+            return apology("Could not find amount of shares on your account")
+
+        # Make symb_shares a list
+        symb_shares = symb_shares_list[0]['shares']
+
+        # If the chosen shares are more than the shares the user has
+        if shares > symb_shares:
+
+            # Return an error to the user
+            return apology("Invalid shares")
+
+        # Get the cash from the user
+        cash_list = db.execute("SELECT cash FROM users WHERE id = ?", session['user_id'])
+
+        # If there's an error and there's an unexpected number of users with the same id (i.e., 0, 2, 3, etc.)
+        if len(cash_list) != 1:
+
+            # Return an error to the user
+            return apology("Could not read cash value")
+
+        # Set cash to be the cash list
+        cash = cash_list[0]['cash']
+
+        # Update the user's cash
+        db.execute("UPDATE users SET cash = cash + ? * ? WHERE id = ?", float(price), shares, session['user_id'])
+
+        # Update cash
+        cash_list = db.execute("SELECT cash FROM users WHERE id = ?", session['user_id'])
+
+        db.execute("UPDATE quotes SET shares = shares - ? WHERE user_id = ? AND symbol = ?", shares, session['user_id'], symbol)
+
+        # If tehre's an error and there's an unexpected number of users with the same id (i.e., 0, 2, 3, etc.)
+        if len(cash_list) != 1:
+
+            # Return an error to the user
+            return apology("Could not read cash value")
+
+        # Old cash variable before update
+        old_cash = cash
+
+        # Update cash
+        cash = cash_list[0]['cash']
+
+        # Set the total of sold amount
+        total = (cash + price * shares) - old_cash
+
+        quote_search = lookup(symbol)
+        if not quote_search:
+            return apology("Could not find quote")
+
+        name = quote_search['name']
+        db.execute("INSERT INTO transactions (user_id, type, symbol, price, shares, name) VALUES (?, ?, ?, ?, ?, ?)",
+                   session['user_id'], 'sell', symbol, price, shares, name)
+        # Return a happy success message
+        return redirect('/')
+
+    # Else (the request method is GET)
+    else:
+
+        # Get the quotes of the user
+        quotes = db.execute("SELECT * FROM quotes WHERE user_id = ?", session['user_id'])
+
+        # Return a page for the quotes to sell
+        return render_template("sell.html", quotes=quotes)

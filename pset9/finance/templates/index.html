@@ -12,20 +12,22 @@
                 <th class="text-start">Name</th>
                 <th class="text-end">Shares</th>
                 <th class="text-end">Price</th>
+                <th class="text-end">TOTAL</th>
             </tr>
         </thead>
         <tbody>
-            {% for i in range(quote_count) %}
+            {% for quote in quotes %}
                 <tr>
-                    <td class="text-start">{{ quotes[i].symbol }}</td>
-                    <td class="text-start">{{ quotes[i].name }}</td>
-                    <td class="text-end">{{ quotes[i].shares }}</td>
-                    <td class="text-end">{{ quotes[i].price }}</td>
+                    <td class="text-start">{{ quote['symbol'] }}</td>
+                    <td class="text-start">{{ quote['name'] }}</td>
+                    <td class="text-end">{{ quote['shares'] }}</td>
+                    <td class="text-end">{{ '%0.2f' | format(quote['price']) }}</td>
+                    <td class="text-end">{{ '%0.2f' | format(quote['total']) }}
                 </tr>
             {%  endfor %}
         </tbody>
         <tfoot>
             <td class="border-0 fw-bold text-end" colspan="4">Cash</td>
-            <td class="border-0 text-end">{{ cash }}</td>
+            <td class="border-0 text-end">{{ '%0.2f' | format(cash) }}</td>
         </tfoot>
 {% endblock %}
