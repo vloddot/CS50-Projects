@@ -1,3 +1,10 @@
+--[[
+    ServeState is the state where the serving player gets to, well 'serve' the ball.
+    It usually gets called from within PlayState where the two players are playing together until
+    the ball goes past the right or left edge of the screen.
+    It can also get called from DoneState where one of the players won and the user is prompted to restart
+]]
+
 ServeState = Class{__includes = BaseState}
 
 --[[
@@ -9,8 +16,13 @@ function ServeState:enter(params)
     self.player1 = params.player1
     self.player2 = params.player2
     self.ball = params.ball
+    self.player_count = params.player_count
 end
 
+--[[
+    ServeState:update(dt)
+    Called every frame when the gamestate is the serve state
+]]
 function ServeState:update(dt)
 
     -- If the return key was pressed in the current frame
@@ -28,22 +40,81 @@ function ServeState:update(dt)
         })
     end
 
-    -- Player 1 movement
-    if love.keyboard.isDown('w') then
-        self.player1.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('s') then
-        self.player1.dy = PADDLE_SPEED
-    else
-        self.player1.dy = 0
-    end
+    --[[
+        Big if, elseif chunk
+        It's for using AI and players depending on player count chosen by user
+    ]]
+    -- If the player count is 2
+    if self.player_count == 2 then
 
-    -- Player 2 movement
-    if love.keyboard.isDown('up') then
-        self.player2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown('down') then
-        self.player2.dy = PADDLE_SPEED
+        -- Player 1 movement
+        if love.keyboard.isDown('w') then
+            self.player1.dy = -PADDLE_SPEED
+
+        elseif love.keyboard.isDown('s') then
+            self.player1.dy = PADDLE_SPEED
+
+        else
+            self.player1.dy = 0
+        end
+
+        -- Player 2 movement
+        if love.keyboard.isDown('up') then
+            self.player2.dy = -PADDLE_SPEED
+
+        elseif love.keyboard.isDown('down') then
+            self.player2.dy = PADDLE_SPEED
+
+        else
+            self.player2.dy = 0
+        end
+
+    -- If the player count is 1
+    elseif self.player_count == 1 then
+        -- AI movement
+        if self.player1.y < self.ball.y then
+            self.player1.dy = PADDLE_SPEED - 100
+
+        elseif self.player1.y > self.ball.y then
+            self.player1.dy = -PADDLE_SPEED + 100
+        else
+            self.player1.dy = 0
+        end
+
+        -- Player 2 movement
+        if love.keyboard.isDown('up') then
+            self.player2.dy = -PADDLE_SPEED
+
+        elseif love.keyboard.isDown('down') then
+            self.player2.dy = PADDLE_SPEED
+
+        else
+            self.player2.dy = 0
+        end
+
+    -- Else (player count is 0)
     else
-        self.player2.dy = 0
+        -- AI 1 movement
+        if self.player1.y < self.ball.y then
+            self.player1.dy = PADDLE_SPEED - 100
+
+        elseif self.player1.y > self.ball.y then
+            self.player1.dy = -PADDLE_SPEED + 100
+
+        else
+            self.player1.dy = 0
+        end
+
+        -- AI 2 movement
+        if self.player2.y < self.ball.y then
+            self.player2.dy = PADDLE_SPEED - 100
+
+        elseif self.player2.y > self.ball.y then
+            self.player2.dy = -PADDLE_SPEED + 100
+
+        else
+            self.player2.dy = 0
+        end
     end
 
     -- Set the ball's delta Y to a random value between -50 and 50
@@ -82,7 +153,17 @@ function ServeState:render()
     -- Render ball
     self.ball:render()
 
+    -- Set font to be the small font from the global fonts table
+    love.graphics.setFont(gFonts['small'])
+
     -- UI message to indicate which player is serving
     love.graphics.printf("Player " .. (self.player1.serving and 1 or 2) .. '\'s serve', 0, 10, VIRTUAL_WIDTH, 'center')
     love.graphics.printf("Press \"Enter\" to serve", 0, 20, VIRTUAL_WIDTH, 'center')
+
+    -- Set font to be the large font from the global fonts table
+    love.graphics.setFont(gFonts['large'])
+
+    -- Player 1 and 2's scores
+    love.graphics.print(self.player1.score, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
+    love.graphics.print(self.player2.score, VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
 end

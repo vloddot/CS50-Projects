@@ -21,7 +21,7 @@ end
 
 --[[
     Ball:reset()
-    Called at certain points of the game to reset the X, Y, delta X, and delta Y of the ball
+    Called at certain states of the game to reset the X, Y, delta X, and delta Y of the ball
 ]]
 function Ball:reset()
 
@@ -36,16 +36,18 @@ end
 
 --[[
     Ball:update(dt)
-    Called every frame to change the X and Y of the ball inside of src/states/PlayState.lua
+    Called every frame to change the X and Y of the ball in some states
 ]]
 function Ball:update(dt)
+
+    -- Update both X and Y each frame
     self.x = self.x + self.dx * dt
     self.y = self.y + self.dy * dt
 end
 
 --[[
     Ball:collides(target)
-    Called every frame in love.update(dt) in main to check if the ball collided with the paddle
+    Called every frame to check if the ball collides with a certain target (usually a paddle) in some states
 ]]
 function Ball:collides(target)
 
@@ -61,5 +63,7 @@ end
     Called after Ball:update(dt) finishes its code
 ]]
 function Ball:render()
+
+    -- Draw a ball rectangle
     love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end
