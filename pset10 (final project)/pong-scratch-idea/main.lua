@@ -62,7 +62,7 @@ function love.keypressed(key)
 
     -- Show FPS
     if key == 'f' then
-        fps = true
+        fps = not fps
     end
 
     -- Quit the game
@@ -71,7 +71,7 @@ function love.keypressed(key)
     end
 
     if key == 'x' then
-        coordinates = true
+        coordinates = not coordinates
     end
 end
 
