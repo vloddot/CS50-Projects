@@ -36,7 +36,8 @@ function ServeState:update(dt)
         gStateMachine:change('play', {
             player1 = self.player1,
             player2 = self.player2,
-            ball = self.ball
+            ball = self.ball,
+            player_count = self.player_count
         })
     end
 
@@ -71,12 +72,13 @@ function ServeState:update(dt)
 
     -- If the player count is 1
     elseif self.player_count == 1 then
-        -- AI movement
-        if self.player1.y < self.ball.y then
-            self.player1.dy = PADDLE_SPEED - 100
 
-        elseif self.player1.y > self.ball.y then
-            self.player1.dy = -PADDLE_SPEED + 100
+        -- AI movement
+        if self.player1.y > self.ball.y then
+            self.player1.dy = -PADDLE_SPEED + 80
+
+        elseif self.player1.y < self.ball.y then
+            self.player1.dy = PADDLE_SPEED - 80
         else
             self.player1.dy = 0
         end
@@ -95,25 +97,25 @@ function ServeState:update(dt)
     -- Else (player count is 0)
     else
         -- AI 1 movement
-        if self.player1.y < self.ball.y then
-            self.player1.dy = PADDLE_SPEED - 100
+        if self.player1.y > self.ball.y then
+            self.player1.dy = -PADDLE_SPEED + 80
 
-        elseif self.player1.y > self.ball.y then
-            self.player1.dy = -PADDLE_SPEED + 100
+        elseif self.player1.y < self.ball.y then
+            self.player1.dy = PADDLE_SPEED - 80
 
         else
             self.player1.dy = 0
         end
 
         -- AI 2 movement
-        if self.player2.y < self.ball.y then
-            self.player2.dy = PADDLE_SPEED - 100
+        if self.player1.y > self.ball.y then
+            self.player1.dy = -PADDLE_SPEED + 80
 
-        elseif self.player2.y > self.ball.y then
-            self.player2.dy = -PADDLE_SPEED + 100
+        elseif self.player1.y < self.ball.y then
+            self.player1.dy = PADDLE_SPEED - 80
 
         else
-            self.player2.dy = 0
+            self.player1.dy = 0
         end
     end
 

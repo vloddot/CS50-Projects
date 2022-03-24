@@ -1,3 +1,0 @@
-# Pong
-#### Video Demo: 
-#### Description:

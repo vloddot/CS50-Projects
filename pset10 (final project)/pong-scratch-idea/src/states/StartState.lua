@@ -20,16 +20,23 @@ end
 function StartState:update(dt)
 
     -- If the user pressed 'up arrow' on the keyboard and player_count won't get out of the 0-2 range
-    if love.keyboard.wasPressed('up') and self.player_count <= 1 and self.player_count >= 0 then
+    if love.keyboard.wasPressed('up') and self.player_count <= 1 and self.player_count >= 1 then
 
         -- Increment player count by 1
         self.player_count = self.player_count + 1
+
+        -- Play the 'paddle_hit' sound from the global sounds table
+        gSounds['paddle_hit']:play()
     
     -- If the user pressed 'down arrow' on the keyboard and player_count won't get out of the 0-2 range
-    elseif love.keyboard.wasPressed('down') and self.player_count <= 2 and self.player_count > 0 then
+    elseif love.keyboard.wasPressed('down') and self.player_count <= 2 and self.player_count > 1 then
 
         -- Decrement player count by 1
         self.player_count = self.player_count - 1
+
+        -- Play the 'paddle_hit' sound from the global sounds table
+        gSounds['paddle_hit']:play()
+
     end
 
     -- If the return key was pressed in the current frame
@@ -60,7 +67,7 @@ function StartState:render()
 
     -- Start State's UI messages
     love.graphics.printf("Hello, Pong!", 0, 10, VIRTUAL_WIDTH, 'center')
-    love.graphics.printf("Choose the amount of needed players", 0, 20, VIRTUAL_WIDTH, 'center')
+    love.graphics.printf("Choose the amount of needed players (change using up and down arrow keys)", 0, 20, VIRTUAL_WIDTH, 'center')
     love.graphics.printf("Player count: " .. self.player_count, 0, 30, VIRTUAL_WIDTH, 'center')
     love.graphics.printf("Choose options and press \"Enter\" to start", 0, 40, VIRTUAL_WIDTH, 'center')
     love.graphics.printf("Press \"Escape\" to quit the game at any time", 0, 50, VIRTUAL_WIDTH, 'center')

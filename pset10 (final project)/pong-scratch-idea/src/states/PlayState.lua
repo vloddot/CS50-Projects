@@ -15,6 +15,7 @@ function PlayState:enter(params)
     self.player1 = params.player1
     self.player2 = params.player2
     self.ball = params.ball
+    self.player_count = params.player_count
 end
 
 --[[
@@ -29,7 +30,7 @@ function PlayState:update(dt)
 
     -- Update the ball
     self.ball:update(dt)
-    
+
     -- If the ball collides with player 1
     if self.ball:collides(self.player1) then
 
@@ -87,28 +88,6 @@ function PlayState:update(dt)
          gSounds['paddle_hit']:play()
     end
 
-    -- Player 1 movement
-    if love.keyboard.isDown('w') then
-        self.player1.dy = -PADDLE_SPEED
-
-    elseif love.keyboard.isDown('s') then
-        self.player1.dy = PADDLE_SPEED
-
-    else
-        self.player1.dy = 0
-    end
-
-    -- Player 2 movement
-    if love.keyboard.isDown('up') then
-        self.player2.dy = -PADDLE_SPEED
-
-    elseif love.keyboard.isDown('down') then
-        self.player2.dy = PADDLE_SPEED
-
-    else
-        self.player2.dy = 0
-    end
-
     -- If the ball went past the edge of the screen in player 1's side
     if self.ball.x < 0 then
 
@@ -131,7 +110,8 @@ function PlayState:update(dt)
             gStateMachine:change('done', {
                 player1 = self.player1,
                 player2 = self.player2,
-                ball = self.ball
+                ball = self.ball,
+                player_count = self.player_count
             })
 
         -- Else (score is less than 10)
@@ -141,7 +121,8 @@ function PlayState:update(dt)
             gStateMachine:change('serve', {
                 player1 = self.player1,
                 player2 = self.player2,
-                ball = self.ball
+                ball = self.ball,
+                player_count = self.player_count
             })
 
             -- Reset ball's X and Y
@@ -173,7 +154,8 @@ function PlayState:update(dt)
             gStateMachine:change('done', {
                 player1 = self.player1,
                 player2 = self.player2,
-                ball = self.ball
+                ball = self.ball,
+                player_count = self.player_count
             })
 
         -- Else (Player 1's score is less than 10)
@@ -182,7 +164,8 @@ function PlayState:update(dt)
             gStateMachine:change('serve', {
                 player1 = self.player1,
                 player2 = self.player2,
-                ball = self.ball
+                ball = self.ball,
+                player_count = self.player_count
             })
 
             -- Reset the ball's X and Y
@@ -191,6 +174,82 @@ function PlayState:update(dt)
 
         -- Play the 'score' sound
         gSounds['score']:play()
+    end
+
+    if self.player_count == 2 then
+
+        -- Player 1 movement
+        if love.keyboard.isDown('w') then
+            self.player1.dy = -PADDLE_SPEED
+
+        elseif love.keyboard.isDown('s') then
+            self.player1.dy = PADDLE_SPEED
+
+        else
+            self.player1.dy = 0
+        end
+
+        -- Player 2 movement
+        if love.keyboard.isDown('up') then
+            self.player2.dy = -PADDLE_SPEED
+
+        elseif love.keyboard.isDown('down') then
+            self.player2.dy = PADDLE_SPEED
+
+        else
+            self.player2.dy = 0
+        end
+
+    -- If the player count is 1
+    elseif self.player_count == 1 then
+
+        -- AI movement
+        if self.player1.y > self.ball.y then
+            self.player1.dy = -PADDLE_SPEED + 80
+
+        elseif self.player1.y < self.ball.y then
+            self.player1.dy = PADDLE_SPEED - 80
+        else
+            self.player1.dy = 0
+        end
+
+        -- Player 2 movement
+        if love.keyboard.isDown('up') then
+            self.player2.dy = -PADDLE_SPEED
+
+        elseif love.keyboard.isDown('down') then
+            self.player2.dy = PADDLE_SPEED
+
+        else
+            self.player2.dy = 0
+        end
+
+    -- Else (player count is 0)
+    else
+
+        -- I guess it's fine like this :) (spoiler alert: it's horrible)
+        
+        -- AI 1 movement
+        if self.player1.y > self.ball.y then
+            self.player1.dy = -PADDLE_SPEED
+
+        elseif self.player1.y < self.ball.y then
+            self.player1.dy = PADDLE_SPEED
+
+        else
+            self.player1.dy = 0
+        end
+
+        -- AI 2 movement
+        if self.player2.y > self.ball.y then
+            self.player2.dy = -PADDLE_SPEED
+
+        elseif self.player2.y < self.ball.y then
+            self.player2.dy = PADDLE_SPEED
+
+        else
+            self.player2.dy = 0
+        end
     end
 
     -- If the ball is hitting the top part of the screen
