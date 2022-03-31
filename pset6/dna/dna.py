@@ -32,6 +32,8 @@ def main():
 
         # Set STRs to be the names of STRs in fieldnames[1:end of list]
         STRs = reader.fieldnames[1:]
+        
+        print(people)
 
     # Declare a DNA string
     dna = ""

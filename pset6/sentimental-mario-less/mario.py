@@ -1,6 +1,3 @@
-from multiprocessing.sharedctypes import Value
-
-
 def get_input():
     while True:
         height = 0
@@ -10,8 +7,9 @@ def get_input():
             if height >= 1 and height <= 8:
                 break
             
+            print("Invalid height")
         except ValueError:
-            print("That is not a number")
+            print("Invalid height")
             
     return height
     
