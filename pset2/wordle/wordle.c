@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 
 // each of our text files contains 1000 words
 #define LISTSIZE 1000
@@ -35,7 +36,6 @@ int main(int argc, string argv[])
     int wordsize = 0;
 
     // ensure argv[1] is either 5, 6, 7, or 8 and store that value in wordsize instead
-    // TODO #2
     if (argv[1][0] == '5')
     {
         wordsize = 5;
@@ -101,7 +101,10 @@ int main(int argc, string argv[])
         int status[wordsize];
 
         // set all elements of status array initially to 0, aka WRONG
-        // TODO #4
+        for (int j = 0; j < wordsize; j++)
+        {
+            status[j] = WRONG;
+        }
 
         // Calculate score for the guess
         int score = check_word(guess, wordsize, status, choice);
@@ -120,7 +123,14 @@ int main(int argc, string argv[])
     }
 
     // Print the game's result
-    // TODO #7
+    if (!won)
+    {
+        printf(RED"The word was %s!\n", choice);
+    }
+    else
+    {
+        printf(GREEN"You won!\n");
+    }
 
     // that's all folks!
     return 0;
@@ -134,10 +144,11 @@ string get_guess(int wordsize)
 
     do
     {
-        guess = get_string(" ");
-    } 
+        guess = get_string("Input a 5-letter word: ");
+    }
+
     while (strlen(guess) != wordsize);
-    
+
     return guess;
 }
 
@@ -145,16 +156,31 @@ int check_word(string guess, int wordsize, int status[], string choice)
 {
     int score = 0;
 
-    // compare guess to choice and score points as appropriate, storing points in status
-    // TODO #5
+    if (strcmp(guess, choice) == 0)
+    {
+        score += EXACT * wordsize;
+        return score;
+    }
 
-    // HINTS
-    // iterate over each letter of the guess
-        // iterate over each letter of the choice
-            // compare the current guess letter to the current choice letter
-                // if they're the same position in the word, score EXACT points (green) and break so you don't compare that letter further
-                // if it's in the word, but not the right spot, score CLOSE point (yellow)
-        // keep track of the total score by adding each individual letter's score from above
+    // compare guess to choice and score points as appropriate, storing points in status
+    for (int i = 0; i < wordsize; i++)
+    {
+        if (tolower(guess[i]) == tolower(choice[i]))
+        {
+            score += EXACT;
+            status[i] = EXACT;
+            break;
+        }
+
+        for (int j = 0; j < wordsize; j++)
+        {
+            if (guess[i] == choice[j])
+            {
+                score += CLOSE;
+                status[i] = CLOSE;
+            }
+        }
+    }
 
     return score;
 }
@@ -162,8 +188,31 @@ int check_word(string guess, int wordsize, int status[], string choice)
 void print_word(string guess, int wordsize, int status[])
 {
     // print word character-for-character with correct color coding, then reset terminal font to normal
-    // TODO #6
+    for (int i = 0; i < wordsize; i++)
+    {
+        if (status[i] == EXACT)
+        {
+            printf(GREEN"%c"RESET, guess[i]);
+            continue;
+        }
 
+        else if (status[i] == CLOSE)
+        {
+            printf(YELLOW"%c"RESET, guess[i]);
+            continue;
+        }
+
+        else if (status[i] == WRONG)
+        {
+            printf(RED"%c"RESET, guess[i]);
+            continue;
+        }
+        else
+        {
+            printf("%c", guess[i]);
+            continue;
+        }
+    }
     printf("\n");
     return;
 }
