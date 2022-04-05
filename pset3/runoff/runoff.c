@@ -15,7 +15,8 @@ typedef struct
     string name;
     int votes;
     bool eliminated;
-} candidate;
+}
+candidate;
 
 // Array of candidates
 candidate candidates[MAX_CANDIDATES];
@@ -128,20 +129,20 @@ int main(int argc, string argv[])
 bool vote(int voter, int rank, string name)
 {
     // For each candidate
-    for (int i = 0; i < candidate_count; i++)
-    {
-        // If the candidate the voter chose is the same as the current candidate's name
-        if (strcmp(candidates[i].name, name) == 0)
-        {
-            // Set the preferences for the voter and his rank to be the current candidate's index
+    for (int i = 0; i < candidate_count; i++) {
+
+        // Check if the name preferred by the voter is the same as the current candidate
+        if (strcmp(name, candidates[i].name) == 0) {
+
+            // Update the preferences 2D array to set the candidate at [voter][rank] to be the current candidate
             preferences[voter][rank] = i;
 
-            // Return true
+            // Return true indicating that we have found a match
             return true;
         }
     }
 
-    // Return false
+    // Return false if we didn't return true indicating that we haven't found a match
     return false;
 }
 
@@ -149,62 +150,52 @@ bool vote(int voter, int rank, string name)
 void tabulate(void)
 {
     // For each voter
-    for (int i = 0; i < voter_count; i++)
-    {
+    for (int i = 0; i < voter_count; i++) {
+
         // For each candidate
-        for (int j = 0; j < candidate_count; j++)
-        {
-            // If the candidate is not eliminated
-            if (!candidates[preferences[i][j]].eliminated)
-            {
-                // Increment candidate's votes
+        for (int j = 0; j < candidate_count; j++) {
+
+            // If the current candidate isn't eliminated
+            if (!candidates[preferences[i][j]].eliminated) {
+
+                // Increment the current candidate
                 candidates[preferences[i][j]].votes++;
 
-                // Break to go to the next voter
+                // Break from the second candidate for loop to go to the next voter
                 break;
             }
         }
     }
 
-    // Return, ending the vote count
     return;
 }
 
 // Print the winner of the election, if there is one
 bool print_winner(void)
 {
-    // Make a struct that includes the index of the candidate and his votes
-    typedef struct
-    {
-        int index;
-        int votes;
-    } best;
 
-    // Make an object of the struct
-    best best_candidate;
+    // Set a value called max_votes to store the total votes of all candidates combined
+    int max_votes = 0;
 
     // For each candidate
-    for (int i = 0; i < candidate_count; i++)
-    {
-        // If the current candidate's votes is more than any other candidate seen before
-        if (candidates[i].votes > best_candidate.votes)
-        {
-            // Set the max votes to be the current candidate's votes
-            best_candidate.votes = candidates[i].votes;
+    for (int i = 0; i < candidate_count; i++) {
 
-            // Set the candidate with the most votes to be the candidate's index
-            best_candidate.index = i;
-        }
+        // Add max votes to the current candidate's votes
+        max_votes += candidates[i].votes;
     }
 
-    // If the most votes a person has is bigger than 50% of the votes
-    if (best_candidate.votes > voter_count / 2)
-    {
-        // Print the candidate with the most votes
-        printf("%s\n", candidates[best_candidate.index].name);
+    // For each candidate
+    for (int i = 0; i < candidate_count; i++) {
 
-        // Return true indicating that there is a winner
-        return true;
+        // If the current candidate has more than half the vote
+        if (candidates[i].votes > max_votes / 2) {
+
+            // Print their name
+            printf("%s\n", candidates[i].name);
+
+            // Return true indicating that there is a winner
+            return true;
+        }
     }
 
     // Return false indicating that there is no winner
@@ -214,68 +205,63 @@ bool print_winner(void)
 // Return the minimum number of votes any remaining candidate has
 int find_min(void)
 {
-    // Set a variable called min to be the minimum amount of votes each candidate has
-    int min = MAX_VOTERS;
+    // Set a min_votes variable to store the minimum number of votes any remaining candidate has
+    int min_votes = MAX_VOTERS;
 
     // For each candidate
-    for (int i = 0; i < candidate_count; i++)
-    {
-        // If current candidate is not eliminated
-        if (!candidates[i].eliminated)
-        {
-            // If current candidate's votes is less than the minimum number of votes
-            if (candidates[i].votes < min)
-            {
-                // Set the minimum number of votes to be current candidate's votes
-                min = candidates[i].votes;
-            }
-        }
-        // If current candidate is eliminated
-        else
-        {
-            // Set current candidate's votes to 0
-            candidates[i].votes = 0;
+    for (int i = 0; i < candidate_count; i++) {
+
+        // If min_votes is bigger than the current candidate's votes and the candidate isn't eliminated
+        if (min_votes > candidates[i].votes && !candidates[i].eliminated) {
+
+            // Set min_votes to be the current candidate's votes
+            min_votes = candidates[i].votes;
         }
     }
 
-    // Return minimum number of votes
-    return min;
+    // Return the minimum number of votes
+    return min_votes;
 }
 
 // Return true if the election is tied between all candidates, false otherwise
 bool is_tie(int min)
 {
-    // The number of eliminated candidates
-    int num_eliminated = 0;
+    // Declare a variable to store the amount of non-eliminated candidates
+    int notElimCandidates = 0;
 
-    // The count of people that have the minimum number of votes and are not eliminated
-    int count = 0;
+    // Declare a counter variable that has the number of candidates that are at the minimum number of votes
+    int counter = 0;
 
     // For each candidate
-    for (int i = 0; i < candidate_count; i++)
-    {
-        // If current candidate is eliminated
-        if (candidates[i].eliminated)
-        {
-            // Increment the num_eliminated variable by 1
-            num_eliminated++;
-        }
+    for (int i = 0; i < candidate_count; i++) {
 
-        // If current candidate's votes are the minimum number of votes and current candidate is eliminated
-        if (candidates[i].votes == min && !candidates[i].eliminated)
-        {
-            // Increment the count variable by 1
-            count++;
+        // If the current candidate isn't eliminated
+        if (!candidates[i].eliminated) {
+
+            // Increment non-eliminated candidates by 1
+            notElimCandidates++;
         }
     }
 
-    // If the number of candidates that have the minimum number of votes and they aren't eliminated equals the number of candidates subtracted by the number of eliminated candidates
-    if (count == candidate_count - num_eliminated)
+    // For each candidate
+    for (int i = 0; i < candidate_count; i++) {
+
+        // If the current candidate's votes equals the minimum number of votes and the current candidate isn't eliminated
+        if (candidates[i].votes == min && !candidates[i].eliminated) {
+
+            // Increment the counter by 1
+            counter++;
+        }
+    }
+
+    // If the counter equals the number of non-eliminated candidates
+    if (counter == notElimCandidates)
     {
-        // Return true
+        // Return true, indicating that the election is tied between all candidates
         return true;
     }
-    // Return false
+    
+    // Return false, indicating that the election isn't tied between all candidates
     return false;
 }
 
@@ -283,13 +269,15 @@ bool is_tie(int min)
 void eliminate(int min)
 {
     // For each candidate
-    for (int i = 0; i < candidate_count; i++)
-    {
-        // If current candidate's votes equal the minimum number of votes, eliminate current candidate
-        if (candidates[i].votes == min)
-        {
+    for (int i = 0; i < candidate_count; i++) {
+
+        // If the current candidate's votes equal the minimum number of votes
+        if (candidates[i].votes == min) {
+
+            // Set the current candidate's eliminated state to true
             candidates[i].eliminated = true;
         }
     }
+    
     return;
 }

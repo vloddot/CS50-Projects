@@ -215,10 +215,10 @@ void print_winner(void)
     // Set count to be 0
     int counter = 0;
 
-    // For each candidate
+    // For each pair
     for (int i = 0; i < pair_count; i++)
     {
-        // For each candidate
+        // For each pair
         for (int j = 0; j < pair_count; j++)
         {
             // If the jth candidate doesn't point to the ith candidate

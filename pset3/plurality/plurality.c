@@ -10,7 +10,8 @@ typedef struct
 {
     string name;
     int votes;
-} candidate;
+}
+candidate;
 
 // Array of candidates
 candidate candidates[MAX];
@@ -38,7 +39,6 @@ int main(int argc, string argv[])
         printf("Maximum number of candidates is %i\n", MAX);
         return 2;
     }
-    // Specifying name and number of votes for each candidate.
     for (int i = 0; i < candidate_count; i++)
     {
         candidates[i].name = argv[i + 1];
@@ -66,58 +66,47 @@ int main(int argc, string argv[])
 // Update vote totals given a new vote
 bool vote(string name)
 {
-    // For each candidate
-    for (int i = 0; i < candidate_count; i++)
-    {
-        // If the given name from the input equals the current candidate's name
-        if (strcmp(candidates[i].name, name) == 0)
-        {
-            // Increment current candidate's votes by 1
-            candidates[i].votes++;
+    for (int i = 0; i < candidate_count; i++) {
 
-            // Return true indicating that vote is counted
+        if (strcmp(name, candidates[i].name) == 0) {
+
+            candidates[i].votes++;
             return true;
         }
     }
 
-    // Return false indicating that vote is not counted
     return false;
 }
+
 // Print the winner (or winners) of the election
 void print_winner(void)
 {
-    // Make a structure including the best candidate's votes and name
-    typedef struct
-    {
-        string name;
-        int votes;
-    } best;
+    // Create a new candidate object which will store the best candidate in the entire election
+    candidate best_candidate;
 
-    // Create a best candidate object
-    best best_candidate;
-
-    // Set best candidate's votes to 0 as a starting point
+    // Declare the votes of the best candidate as 0
     best_candidate.votes = 0;
 
-    for (int i = 0; i < candidate_count; i++)
-    {
-        // If current candidate has more votes than the best candidate
-        if (candidates[i].votes > best_candidate.votes)
-        {
-            // Set the best candidate to be the current candidate with all of his data passed in
-            best_candidate.votes = candidates[i].votes;
-            best_candidate.name = candidates[i].name;
+    // For each candidate
+    for (int i = 0; i < candidate_count; i++) {
+
+        // If the best candidate's votes is less than the current candidate's votes
+        if (best_candidate.votes < candidates[i].votes) {
+
+            // Set the new best candidate to be the current candidate
+            best_candidate = candidates[i];
         }
 
-        // If there's a tie
-        else if (candidates[i].votes == best_candidate.votes)
-        {
-            // Print current candidate
+        // If the best candidate's votes weren't less than the current votes
+        // then check if it equals it
+        else if (best_candidate.votes == candidates[i].votes) {
+
+            // Print the current candidate's name
             printf("%s\n", candidates[i].name);
         }
     }
 
-    // Print best candidate
+    // Print the best candidate's name
     printf("%s\n", best_candidate.name);
     return;
 }
