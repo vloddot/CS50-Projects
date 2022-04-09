@@ -158,8 +158,8 @@ def buy():
         db.execute("UPDATE users SET cash = cash - ? WHERE id = ?", price * shares, session["user_id"])
         db.execute("INSERT INTO quotes (user_id, name, price, symbol, shares) VALUES (?, ?, ?, ?, ?)",
                    session['user_id'], name, price, quote_search['symbol'], shares)
-        db.execute("INSERT INTO transactions (user_id, type, symbol, price, shares, name) VALUES (?, ?, ?, ?, ?, ?)",
-                   session['user_id'], 'buy', symbol, price, shares, name)
+        db.execute("INSERT INTO transactions (user_id, type, symbol, price, shares, name, total) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                   session['user_id'], 'buy', symbol, price, shares, name, float(price) * int(shares))
 
         # Render the homepage
         return redirect("/")
@@ -419,8 +419,8 @@ def sell():
             return apology("Could not find quote")
 
         name = quote_search['name']
-        db.execute("INSERT INTO transactions (user_id, type, symbol, price, shares, name) VALUES (?, ?, ?, ?, ?, ?)",
-                   session['user_id'], 'sell', symbol, price, shares, name)
+        db.execute("INSERT INTO transactions (user_id, type, symbol, price, shares, name, total) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                   session['user_id'], 'sell', symbol, price, shares, name, float(price) * int(shares))
         # Return a happy success message
         return redirect('/')
 

@@ -93,30 +93,6 @@ function ServeState:update(dt)
         else
             self.player2.dy = 0
         end
-
-    -- Else (player count is 0)
-    else
-        -- AI 1 movement
-        if self.player1.y > self.ball.y then
-            self.player1.dy = -PADDLE_SPEED + 80
-
-        elseif self.player1.y < self.ball.y then
-            self.player1.dy = PADDLE_SPEED - 80
-
-        else
-            self.player1.dy = 0
-        end
-
-        -- AI 2 movement
-        if self.player1.y > self.ball.y then
-            self.player1.dy = -PADDLE_SPEED + 80
-
-        elseif self.player1.y < self.ball.y then
-            self.player1.dy = PADDLE_SPEED - 80
-
-        else
-            self.player1.dy = 0
-        end
     end
 
     -- Set the ball's delta Y to a random value between -50 and 50

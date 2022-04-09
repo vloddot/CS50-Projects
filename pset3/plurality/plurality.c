@@ -90,6 +90,11 @@ void print_winner(void)
     // For each candidate
     for (int i = 0; i < candidate_count; i++) {
 
+        // If the best candidate's votes equal 0, then continue onto the next candidate
+        if (candidates[i].votes == 0) {
+
+            continue;
+        }
         // If the best candidate's votes is less than the current candidate's votes
         if (best_candidate.votes < candidates[i].votes) {
 

@@ -54,7 +54,7 @@ function DoneState:render()
     love.graphics.setFont(gFonts['small'])
 
     -- UI message to promprt the user for another round and say who won
-    love.graphics.printf('Player ' .. (self.player1.serving and 1 or 2) .. ' won!', 0, 10, VIRTUAL_WIDTH , 'center')
+    love.graphics.printf('Player ' .. (self.player1.won and 1 or 2) .. ' won!', 0, 10, VIRTUAL_WIDTH , 'center')
     love.graphics.printf('Press \"Enter\" to restart!', 0, 20, VIRTUAL_WIDTH ,'center')
 
     -- Set the font to the large font from the global fonts table

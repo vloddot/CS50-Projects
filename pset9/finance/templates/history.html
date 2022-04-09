@@ -20,8 +20,8 @@
                 <tr>
                     <td class="text-start">{{ transaction['type'] }}</td>
                     <td class="text-start">{{ transaction['symbol'] }}</td>
-                    <td class="text-start">{{ transaction['price'] }}</td>
-                    <td class="text-end"><{{ transaction['shares'] }}</td>
+                    <td class="text-start">{{ transaction['price'] | usd }}</td>
+                    <td class="text-end">{{ transaction['shares'] }}</td>
                     <td class="text-end">{{ transaction['name'] }}</td>
                 </tr>
             {% endfor %}

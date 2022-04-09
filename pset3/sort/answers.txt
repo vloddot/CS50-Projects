@@ -1,11 +1,11 @@
 sort1 uses: Bubble Sort
 
-How do you know?: Because Bubble Sort is usually the best in Omega which is Omega(n)
+How do you know?: It performs horribly on datasets where it's not sorted because when it is sorted, it only has to pass through once
 
 sort2 uses: Merge Sort
 
-How do you know?: Because Merge Sort has the same O(n log n) for every case, and is usually faster than both Bubble Sort and Selection Sort
+How do you know?: Because it performs really fast on every test
 
 sort3 uses: Selection Sort
 
-How do you know?: Because its numbers are almost the same, which is O or Omega(n squared)
+How do you know?: Because its numbers are the same on every dataset
