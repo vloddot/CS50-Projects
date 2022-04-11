@@ -26,21 +26,15 @@ def after_request(response):
 def index():
     if request.method == "POST":
 
-        # Get the data from the input
-        name = request.form.get("name")
-        month = request.form.get("month")
-        day = request.form.get("day")
-
-        # Insert the data into the database
-        db.execute("INSERT INTO birthdays (name, month, day) VALUES(?, ?, ?)", name, month, day)
-
-        # Redirect user to homepage
-        return redirect("/")
+        name = request.form['name']
+        month = request.form['month']
+        day = request.form['day']
+        
+        db.execute('INSERT INTO birthdays (name, month, day) VALUES(?, ?, ?)', name, month, day)
+        return redirect('/',)
 
     else:
+        
+        birthdays = db.execute('SELECT * FROM birthdays')
 
-        # Get the birthday information
-        birthdays = db.execute("SELECT * FROM birthdays")
-
-        # Return birthdays page
         return render_template("index.html", birthdays=birthdays)

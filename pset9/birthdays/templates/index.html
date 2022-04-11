@@ -14,12 +14,11 @@
             <div class="section">
 
                 <h2>Add a Birthday</h2>
-                <form action="/" method="post">
-
-                    <input name="name" placeholder="Name" type="text">
-                    <input name="month" placeholder="Month" type="number" min="1" max="12">
-                    <input name="day" placeholder="Day" type="number" min="1" max="31">
-                    <input type="submit" value="Add birthday">
+                <form action="/" method="POST">
+                    <input placeholder="Name" autofocus name="name" id="name" type="text">
+                    <input placeholder="Month" name="month" id="month" type="number" min="1" max="12">
+                    <input placeholder="Day" name="day" id="day" type="number" min="1" max="31">
+                    <input type="submit" value="Add Birthday">
                 </form>
             </div>
 
@@ -34,11 +33,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- For each birthday in the birthdays data set, output its data into a table -->
                         {% for birthday in birthdays %}
                             <tr>
-                                <td>{{ birthday.name }}</td>
-                                <td>{{ birthday.month }}/{{ birthday.day }}</td>
+                                <td>{{ birthday['name'] }}</td>
+                                <td>{{ birthday['month'] }}/{{ birthday['day'] }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

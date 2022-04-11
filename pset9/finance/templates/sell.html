@@ -2,7 +2,7 @@
 
 {% block title %}
     Sell
-{% endblock%}
+{% endblock %}
 
 {% block main %}
     <form action="/sell" method="post">
@@ -11,17 +11,19 @@
             <select class="form-select mx-auto w-auto" name="symbol" id="symbol">
 
                 <option disabled selected value="Symbol">Symbol</option>
+
                 {% for quote in quotes %}
                     <option value="{{ quote['symbol'] }}">{{ quote['symbol'] }}</option>
                 {% endfor %}
+
             </select>
 
         </div>
 
         <div class="mb-3">
-            <input type="text" id="shares" name="shares" placeholder="Shares">
+            <input class="form-control mx-auto w-auto" type="number" min="0" id="shares" name="shares" placeholder="Shares">
         </div>
 
         <button class="btn btn-primary" type="submit">Sell</button>
     </form>
-{% endblock%}
+{% endblock %}
