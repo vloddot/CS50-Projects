@@ -5,13 +5,11 @@
 {% endblock %}
 
 {% block main %}
-
     <form action="/quote" method="post">
         <div class="mb-3">
-            <input name="symbol" id="symbol" autofocus autocomplete="off" class="form-control mx-auto w-auto" placeholder="Symbol" type="text">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="symbol" id="symbol" placeholder="Symbol" type="text">
         </div>
 
         <button class="btn btn-primary" type="submit">Search</button>
     </form>
-
 {% endblock %}

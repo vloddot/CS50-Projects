@@ -19,7 +19,7 @@ node;
 
 int j = 0;
 
-// TODO: Choose number of buckets in hash table
+// Choose number of buckets in hash table
 const unsigned int N = (LENGTH + 1) * 'z';
 
 // Hash table
