@@ -9,33 +9,27 @@
         <thead>
             <th class="text-start">Symbol</th>
             <th class="text-start">Name</th>
-            <th class="text-end">Shares</th>
+            <th class="text-start">Shares</th>
             <th class="text-end">Price</th>
             <th class="text-end">TOTAL</th>
         </thead>
-
         <tbody>
             {% for quote in quotes %}
-                <tr>
-                    <td class="text-start">{{ quote['symbol'] }}</td>
-                    <td class="text-start">{{ quote['name'] }}</td>
-                    <td class="text-end">{{ quote['shares'] }}</td>
-                    <td class="text-end">{{ quote['price'] | usd }}</td>
-                    <td class="text-end">{{ totals[quote['symbol']] | usd }}</td>
-                </tr>
-
+                <td class="text-start">{{ quote['symbol'] }}</td>
+                <td class="text-start">{{ quote['name'] }}</td>
+                <td class="text-start">{{ quote['shares'] }}</td>
+                <td class="text-end">{{ quote['price'] | usd }}</td>
+                <td class="text-end">{{ totals[quote['symbol']] | usd }}</td>
             {% endfor %}
         </tbody>
-
         <tfoot>
             <tr>
                 <td class="border-0 fw-bold text-end" colspan="4">Cash</td>
-                <td class="border-0 w-bold text-end">{{ cash | usd }}</td>
+                <td class="border-0 text-end">{{ cash | usd }}</td>
             </tr>
             <tr>
                 <td class="border-0 fw-bold text-end" colspan="4">TOTAL</td>
-                <td class="border-0 w-bold text-end">{{ cash_total | usd }}</td>
-            </tr>
+                <td class="border-0 w-bold text-end">{{ total | usd }}</td>
         </tfoot>
     </table>
 {% endblock %}

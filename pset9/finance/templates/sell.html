@@ -13,15 +13,14 @@
                 {% for quote in quotes %}
                     <option value="{{ quote['symbol'] }}">{{ quote['symbol'] }}</option>
                 {% endfor %}
-
             </select>
-
         </div>
-
+        
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto" type="number" min="0" id="shares" name="shares" placeholder="Shares">
+            <input autocomplete="off" name="shares" id="shares" class="form-control mx-auto w-auto" type="number" min="0" placeholder="Shares">
         </div>
-
-        <button class="btn btn-primary" type="submit">Sell</button>
+        <div class="mb-3">
+            <button class="btn btn-primary" type="submit">Sell</button>
+        </div>
     </form>
 {% endblock %}

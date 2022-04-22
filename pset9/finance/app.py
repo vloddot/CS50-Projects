@@ -1,5 +1,5 @@
+from multiprocessing.sharedctypes import Value
 import os
-from xml.dom import ValidationErr
 
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
@@ -44,29 +44,23 @@ def after_request(response):
 @login_required
 def index():
     """Show portfolio of stocks"""
+    quotes = db.execute('SELECT * FROM quotes WHERE user_id = ?', session['user_id'])
     
+    totals = {}
+    total = 0
+    for quote in quotes:
+        totals[quote['symbol']] = quote['price'] * quote['shares']
+        total += quote['price'] * quote['shares']
+        
     cash_list = db.execute('SELECT cash FROM users WHERE id = ?', session['user_id'])
-    
     if len(cash_list) != 1:
         return apology('Could not read cash value')
     
     cash = cash_list[0]['cash']
     
-    quotes = db.execute('SELECT * FROM quotes WHERE user_id = ?', session['user_id'])
-    
-    total_quote_prices = 0
-    
-    totals = {}
-    
-    for quote in quotes:
-        total_quote_prices += quote['shares'] * quote['price']
-        
-        totals[quote['symbol']] = quote['shares'] * quote['price']
-        
-        
-    cash_total = total_quote_prices + cash
-    
-    return render_template('index.html', quotes=quotes, cash_total=cash_total, totals=totals, cash=cash)
+    total += cash
+
+    return render_template('index.html', quotes=quotes, totals=totals, cash=cash, total=total)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -75,15 +69,14 @@ def buy():
     """Buy shares of stock"""
     
     if request.method == "POST":
-        
-        symbol = request.form.get('symbol')
-        shares = request.form.get('shares')
+        symbol = request.form['symbol']
+        shares = request.form['shares']
         
         if not symbol:
             return apology('Enter a symbol')
         
         if not shares:
-            return apology('Enter an amount for shares')
+            return apology('Enter amount of shares')
         
         try:
             
@@ -91,10 +84,10 @@ def buy():
             
             if shares <= 0 or shares % 1 != 0:
                 print(2 / 0)
-                
+
         except (ValueError, ZeroDivisionError):
             return apology('Enter valid share amount')
-        
+            
         quote = lookup(symbol)
         
         if not quote:
@@ -115,17 +108,16 @@ def buy():
         
         if len(db.execute('SELECT * FROM quotes WHERE symbol = ? AND user_id = ?',
                           quote['symbol'], session['user_id'])) == 0:
-            
-            db.execute('INSERT INTO quotes (name, price, symbol, shares, user_id) VALUES (?, ?, ?, ?, ?)',
-                        quote['name'], quote['price'], quote['symbol'], shares, session['user_id'])
-            
+
+            db.execute('INSERT INTO quotes (user_id, name, price, symbol, shares) VALUES (?, ?, ?, ?, ?)',
+                       session['user_id'], quote['name'], quote['price'], quote['symbol'], shares)
         else:
             db.execute('UPDATE quotes SET shares = shares + ? WHERE symbol = ? AND user_id = ?',
                        shares, quote['symbol'], session['user_id'])
             
-        db.execute('INSERT INTO transactions (type, symbol, shares, name, price, user_id) VALUES (?, ?, ?, ?, ?, ?)',
-                   'Buy', quote['symbol'], shares, quote['name'], quote['price'], session['user_id'])
-            
+        db.execute('INSERT INTO transactions (user_id, type, symbol, shares, name, price) VALUES (?, ?, ?, ?, ?, ?)',
+                   session['user_id'], 'Buy', quote['symbol'], shares, quote['name'], quote['price'])
+
         return redirect('/')
     else:
         return render_template('buy.html')
@@ -140,9 +132,8 @@ def history():
     
     totals = {}
     for transaction in transactions:
-        
-        totals[transaction['symbol']] = float(transaction['price']) * int(transaction['shares'])
-        
+        totals[transaction['symbol']] = transaction['price'] * transaction['shares']
+
     return render_template('history.html', transactions=transactions, totals=totals)
 
 
@@ -199,17 +190,16 @@ def quote():
     """Get stock quote."""
     
     if request.method == "POST":
-        
-        symbol = request.form.get('symbol')
+        symbol = request.form['symbol']
         
         if not symbol:
             return apology('Enter a symbol')
-        
-        
+
+
         quote = lookup(symbol)
         if not quote:
             return apology('Invalid symbol')
-        
+
         return render_template('quote.html', quote=quote)
 
     else:
@@ -221,32 +211,31 @@ def register():
     """Register user"""
     
     if request.method == "POST":
-        
-        username = request.form.get('username')
-        password = request.form.get('password')
-        confirmation = request.form.get('confirmation')
+        username = request.form['username']
+        password = request.form['password']
+        confirmation = request.form['confirmation']
         
         if not username:
-            return apology('Enter your username')
+            return apology('Enter a username')
         
         if not password:
-            return apology('Enter your password')
+            return apology('Enter a password')
         
         if not confirmation:
-            return apology('Enter your password confirmation')
+            return apology('Enter a confirmation for the password')
         
         if password != confirmation:
-            return apology('The password you typed does not match the password confirmation')
+            return apology('Password and password confirmation do not match')
         
         hash = generate_password_hash(password)
         
         try:
             db.execute('INSERT INTO users (username, hash) VALUES (?, ?)', username, hash)
         except ValueError:
-            return apology('This username has already been used')
+            return apology('Username already used')
         
         session['user_id'] = db.execute('SELECT id FROM users WHERE username = ?', username)
-
+        
         return redirect('/login')
 
     else:
@@ -259,9 +248,8 @@ def sell():
     """Sell shares of stock"""
     
     if request.method == "POST":
-        
-        symbol = request.form.get('symbol')
-        shares = request.form.get('shares')
+        symbol = request.form['symbol']
+        shares = request.form['shares']
         
         if not symbol:
             return apology('Enter a symbol')
@@ -270,33 +258,29 @@ def sell():
             return apology('Enter amount of shares')
         
         try:
-            
             shares = int(shares)
             
             if shares <= 0 or shares % 1 != 0:
                 print(2 / 0)
-            
+
         except (ValueError, ZeroDivisionError):
             return apology('Enter valid share amount')
         
         quote = lookup(symbol)
         
         if not quote:
-            return apology('Symbol not found')
+            return apology('Invalid symbol')
         
-        
-        current_shares_list = db.execute('SELECT shares FROM quotes WHERE symbol = ? AND user_id = ?', 
+        current_shares_list = db.execute('SELECT shares FROM quotes WHERE symbol = ? AND user_id = ?',
                                          quote['symbol'], session['user_id'])
         
         if len(current_shares_list) != 1:
-            
             return apology('Could not read the amount of shares for the chosen symbol')
         
         current_shares = current_shares_list[0]['shares']
         
         if shares > current_shares:
-            return apology('Enter valid share amount which is less than the bought shares of the stock quote')
-        
+            return apology('Chosen shares must not be more than what you own')
         
         db.execute('UPDATE users SET cash = cash + ? WHERE id = ?',
                    quote['price'] * shares, session['user_id'])
@@ -304,7 +288,7 @@ def sell():
         if shares == current_shares:
             db.execute('DELETE FROM quotes WHERE symbol = ? AND user_id = ?',
                        quote['symbol'], session['user_id'])
-            
+        
         else:
             db.execute('UPDATE quotes SET shares = shares - ? WHERE user_id = ?',
                        shares, session['user_id'])

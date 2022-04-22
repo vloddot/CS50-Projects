@@ -1,3 +1,4 @@
+-- quotes table
 CREATE TABLE quotes (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     user_id INTEGER NOT NULL,
@@ -8,6 +9,7 @@ CREATE TABLE quotes (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- transactions table
 CREATE TABLE transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     user_id INTEGER NOT NULL,
