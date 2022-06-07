@@ -66,9 +66,7 @@ unsigned int hash(const char *word)
         // Add the ASCII value of the character to the sum
         sum += (tolower(word[i]));
     }
-
-    // Return sum % N (% N is for if the sum is bigger than N and so it goes back up and loops over again to the start)
-    return (sum % N);
+    return hash % N;
 }
 
 // Return true if loading the dictionary was succesful, else return false
