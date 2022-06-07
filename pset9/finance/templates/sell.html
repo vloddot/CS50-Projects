@@ -1,27 +1,33 @@
-{% extends 'layout.html' %}
-
-{% block title %}
-    Sell
-{% endblock%}
-
-{% block main %}
-    <form action="/sell" method="post">
-
-        <div class="mb-3">
-            <select class="form-select mx-auto w-auto" name="symbol" id="symbol">
-
-                <option disabled selected value="Symbol">Symbol</option>
-                {% for quote in quotes %}
-                    <option value="{{ quote['symbol'] }}">{{ quote['symbol'] }}</option>
-                {% endfor %}
-            </select>
-
-        </div>
-
-        <div class="mb-3">
-            <input type="text" id="shares" name="shares" placeholder="Shares">
-        </div>
-
-        <button class="btn btn-primary" type="submit">Sell</button>
-    </form>
-{% endblock%}
+{% extends 'layout.html' %} {% block title %} Sell {% endblock %} {% block main
+%}
+<form action="/sell" method="post">
+  <div class="mb-3">
+    <select
+      name="symbol"
+      class="form-select mx-auto w-auto"
+      id="symbol"
+      required
+    >
+      <option value="">Symbol</option>
+      {% for quote in quotes %}
+      <option value="{{ quote['symbol'] }}">{{ quote['symbol'] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-3">
+    <input
+      autocomplete="off"
+      type="number"
+      class="form-control mx-auto w-auto"
+      name="shares"
+      id="shares"
+      placeholder="Shares"
+      min="0"
+      required
+    />
+  </div>
+  <div class="mb-3">
+    <button type="submit" class="btn btn-success">Sell</button>
+  </div>
+</form>
+{% endblock %}

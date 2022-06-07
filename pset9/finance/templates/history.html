@@ -1,30 +1,27 @@
-{% extends 'layout.html' %}
-
-{% block title %}
-    History
-{% endblock %}
-
-{% block main %}
-    <table class="table tablestriped">
-        <thead>
-            <tr>
-                <th class="text-start">Type</th>
-                <th class="text-start">Symbol</th>
-                <th class="text-start">Price</th>
-                <th class="text-end">Shares</th>
-                <th class="text-end">Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transaction in transactions %}
-                <tr>
-                    <td class="text-start">{{ transaction['type'] }}</td>
-                    <td class="text-start">{{ transaction['symbol'] }}</td>
-                    <td class="text-start">{{ transaction['price'] }}</td>
-                    <td class="text-end"><{{ transaction['shares'] }}</td>
-                    <td class="text-end">{{ transaction['name'] }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% extends 'layout.html' %} {% block title %} Transactions {% endblock %} {%
+block main %}
+<table class="table tablestriped">
+  <thead>
+    <tr>
+      <th class="text-start">Type</th>
+      <th class="text-start">Symbol</th>
+      <th class="text-start">Name</th>
+      <th class="text-end">Shares</th>
+      <th class="text-end">Price</th>
+      <th class="text-end">TOTAL</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for transaction in transactions %}
+    <tr>
+      <td class="text-start">{{ transaction.type }}</td>
+      <td class="text-start">{{ transaction.symbol }}</td>
+      <td class="text-start">{{ transaction.name }}</td>
+      <td class="text-end">{{ transaction.shares }}</td>
+      <td class="text-end">{{ transaction.price | usd }}</td>
+      <td class="text-end">{{ totals[transaction['symbol']] | usd }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

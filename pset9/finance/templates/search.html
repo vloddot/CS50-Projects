@@ -1,9 +1,11 @@
-{% extends "layout.html" %}
-
-{% block title %}
-    Quoted
-{% endblock %}
-
+{% extends 'layout.html' %} {% block title %} Search {% endblock %} 
 {% block main %}
-    <p> A share of {{ name }} ({{ symbol }}) costs ${{ '%0.2f' | format(price) }}</p>
+<form action="/quote" method="post">
+    <div class="mb-3">
+        <input autocomplete="off" autofocus type="text" name="symbol" id="symbol" class="form-control mx-auto w-auto" placeholder="Symbol">
+    </div>
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
 {% endblock %}

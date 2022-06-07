@@ -36,7 +36,7 @@
                 }
             ],
             "preLaunchTask": "C/C++: clang-10 build active file",
-            "miDebuggerPath": "/usr/bin/lldb-mi-10"
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }

@@ -24,26 +24,6 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-
-
-# Custom filter
-app.jinja_env.filters["usd"] = usd
-app.jinja_env.filters["usd"] = usd
-
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
-
-
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
-
-# Configure CS50 Library to use SQLite database
-db = SQL("sqlite:///finance.db")
 
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
@@ -59,26 +39,25 @@ def after_request(response):
     return response
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 @login_required
 def index():
-    total = list()
     """Show portfolio of stocks"""
-
-    # The following line gets data from the quotes table in SQLite3
-    quotes = db.execute("SELECT DISTINCT name, symbol, price, shares FROM quotes WHERE user_id = ?", session["user_id"])
-
-    # The following line returns the amount of cash the user has
-    cash_list = db.execute("SELECT cash FROM users WHERE id = ?", session["user_id"])
-    if len(cash_list) != 1:
-        return apology("Could not read cash value")
-
-    cash = cash_list[0]["cash"]
-
-    for i in range(len(quotes)):
-        quotes[i]['total'] = quotes[i]['price'] * quotes[i]['shares']
-
-    return render_template("index.html", cash=cash, quotes=quotes)
+    quotes = db.execute('SELECT * FROM quotes WHERE user_id = ?', session["user_id"])
+    totals = {}
+    total = 0
+    cash = db.execute('SELECT cash FROM users WHERE id = ?', session["user_id"])
+    if len(cash) != 1:
+        return apology("something went wrong")
+    
+    cash = cash[0]['cash']
+    for quote in quotes:
+        totals[quote['symbol']] = quote['price'] * quote['shares']
+        total += quote['price'] * quote['shares']
+        
+    total += cash
+    
+    return render_template("index.html", quotes=quotes, totals=totals, cash=cash, total=total)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -86,95 +65,67 @@ def index():
 def buy():
     """Buy shares of stock"""
     if request.method == "POST":
-
-        # Get the inputted symbol and the shares
-        symbol = request.form.get("symbol")
-        shares = request.form.get("shares")
-
-        # If the user did not input a symbol
-        if not symbol:
-
-            # Return an error to the user
-            return apology("Input a symbol")
-
-        # If the user did not input any value for shares
-        if not shares:
-
-            # Return an error to the user
-            return apology("Enter an amount of shares")
-
-        # Try except blocks in case the shares value is a float, string, etc.
+        symbol = request.form['symbol']
+        shares = request.form['shares']
+        if not symbol or not shares:
+            return apology("must provide symbol and shares")
+        
         try:
-
-            # Change shares' data type to integer
+            shares = float(shares)
+            
+            if shares % 1 != 0 or shares < 1:
+                raise ValueError
+            
             shares = int(shares)
 
-        # In case the shares property is not integer
         except ValueError:
+            return apology('must provide a valid number of shares')
+    
+        quote = lookup(symbol)
+        if not quote:
+            return apology("invalid symbol")
+        
+        cash = db.execute('SELECT cash FROM users WHERE id = ?', session['user_id'])
+        if len(cash) != 1:
+            return apology("something went wrong")
+        
+        cash = cash[0]['cash']
+        
+        if cash < quote['price'] * shares:
+            return apology("You do not have enough cash for this transaction")
+        
+        db.execute('UPDATE users SET cash = cash - ? WHERE id = ?', quote['price'] * shares, session['user_id'])
+        quotes = db.execute('SELECT * FROM quotes WHERE user_id = ? AND symbol = ?', session['user_id'], quote['symbol'])
+        if len(quotes) == 0:
+            db.execute('INSERT INTO quotes (user_id, symbol, name, shares, price) VALUES (?, ?, ?, ?, ?)', session['user_id'], quote['symbol'], quote['name'], shares, quote['price'])
+        else:
+            db.execute('UPDATE quotes SET shares = shares + ? WHERE user_id = ? AND symbol = ?', shares, session['user_id'], quote['symbol'])
 
-            # Return an error to the user
-            return apology("Invalid number of shares")
+        db.execute('INSERT INTO transactions (user_id, type, symbol, name, shares, price) VALUES (?, ?, ?, ?, ?, ?)', session['user_id'], 'Buy', quote['symbol'], quote['name'], shares, quote['price'])
+        return redirect('/')
 
-        # If shares entered are from minus infinity to 0
-        if shares <= 0:
-
-            # Return an error to the user
-            return apology("Invalid number of shares")
-
-        # Look for the inputted symbol
-        quote_search = lookup(symbol)
-
-        # If it's not possible to find the inputted symbol
-        if not quote_search:
-
-            # Return an error to the user
-            return apology("Failed to find symbol")
-
-        # Get the name and price of the quote the user is searching
-        name = quote_search["name"]
-        price = quote_search["price"]
-
-        # Get the cash from the current user (as a list)
-        cash_list = db.execute("SELECT cash FROM users WHERE id = ?", session["user_id"])
-
-        # If there are more or less elements in the SQL query than intended
-        if len(cash_list) != 1:
-
-            # Return an error to the user
-            return apology("Could not read cash value")
-
-        # Set cash to a new variable as a float
-        cash = cash_list[0]["cash"]
-
-        # If the cash is less than the amount of shares times the price
-        if cash < (price * int(shares)):
-
-            # Return an error to the user
-            return apology("You cannot afford this stock")
-
-        quotes = db.execute("SELECT * FROM quotes WHERE user_id = ?", session['user_id'])
-
-        # Update the user's cash and quotes to render them later
-        db.execute("UPDATE users SET cash = cash - ? WHERE id = ?", price * shares, session["user_id"])
-        db.execute("INSERT INTO quotes (user_id, name, price, symbol, shares) VALUES (?, ?, ?, ?, ?)",
-                   session['user_id'], name, price, quote_search['symbol'], shares)
-        db.execute("INSERT INTO transactions (user_id, type, symbol, price, shares, name) VALUES (?, ?, ?, ?, ?, ?)",
-                   session['user_id'], 'buy', symbol, price, shares, name)
-
-        # Render the homepage
-        return redirect("/")
-
-    else:
-        return render_template("buy.html")
+    return render_template("buy.html")
 
 
 @app.route("/history")
 @login_required
 def history():
     """Show history of transactions"""
-
-    transactions = db.execute("SELECT * FROM transactions WHERE user_id = ?", session['user_id'])
-    return render_template("history.html", transactions=transactions)
+    transactions = db.execute('SELECT * FROM transactions WHERE user_id = ?', session['user_id'])
+    totals = {}
+    total = 0
+    cash = db.execute('SELECT cash FROM users WHERE id = ?', session['user_id'])
+    if len(cash) != 1:
+        return apology("something went wrong")
+    
+    cash = cash[0]['cash']
+    
+    for transaction in transactions:
+        totals[transaction['symbol']] = transaction['price'] * transaction['shares']
+        total += transaction['price'] * transaction['shares']
+        
+    total += cash
+    return render_template("history.html", transactions=transactions, totals=totals, cash=cash, total=total)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -209,8 +160,7 @@ def login():
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
-    else:
-        return render_template("login.html")
+    return render_template("login.html")
 
 
 @app.route("/logout")
@@ -228,207 +178,109 @@ def logout():
 @login_required
 def quote():
     """Get stock quote."""
-    # If the request method is post, lookup the database for the symbols inside the database
     if request.method == "POST":
+        symbol = request.form['symbol']
+        if not symbol:
+            return apology("must provide symbol", 400)
+        
+        quote = lookup(symbol)
+        if not quote:
+            return apology("invalid symbol", 400)
+        
+        return render_template('quote.html', quote=quote)
+    
+    return render_template('search.html')
 
-        # Get the inputted symbol from the user
-        symb_input = request.form.get("symbol")
 
-        # If user didn't input a symbol
-        if not symb_input:
-
-            # Return an error to the user
-            return apology("Input a symbol")
-
-        # Look up for the quote the user entered
-        quote_search = lookup(symb_input)
-
-        # If the quote doesn't exist
-        if not quote_search:
-
-            # Return an error to the user
-            return apology("Failed to find symbol")
-
-        # Define variables for each of the data points of the quote
-        name = quote_search["name"]
-        price = quote_search["price"]
-        symbol = quote_search["symbol"]
-
-        # Return the search.html template with values passed in
-        return render_template("search.html", name=name, price=price, symbol=symbol)
-    else:
-
-        return render_template("quote.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-
-    # If the request method is post (i.e., the user inputted the info), check the users' input and insert the data into the SQL database
     if request.method == "POST":
-        # Declare variables for the username, password, and password confirmation
-        username = request.form.get("username")
-        password = request.form.get("password")
-        confirmation = request.form.get("confirmation")
-
-        # Check if username hasn't been inputted
+        username = request.form['username']
+        password = request.form['password']
+        confirmation = request.form['confirmation']
+        
         if not username:
-            return apology("Input the username")
-
-        # Check if password hasn't been inputted
+            return apology("must provide username", 400)
+        
         if not password:
-            return apology("Input the password")
-
-        # Check if password confirmation hasn't been inputted
+            return apology("must provide password", 400)
+        
         if not confirmation:
-            return apology("Input the confirmation password")
-
-        # Check if the password matches the confirmation
+            return apology("must provide confirmation", 400)
+        
         if password != confirmation:
-            return apology("The password field is not the same as the confirmation field")
-
-        # Check if the username has already been used
-
-        # Hash the password
-        hash = generate_password_hash(password)
-
-        # Input the username, and password into the SQL database
+            return apology("passwords do not match", 400)
+        
         try:
-            db.execute("INSERT INTO users (username, hash) VALUES (?, ?)", username, hash)
+            db.execute('INSERT INTO users (username, hash) VALUES (?, ?)', username, generate_password_hash(password))
         except ValueError:
-            return apology("This username has already been used")
+            return apology('username already exists', 400)
+        
+        session['user_id'] = db.execute('SELECT id FROM users WHERE username = ?', username)
+        
+        if len(session['user_id']) != 1:
+            return apology('something went wrong', 500)
+        
+        session['user_id'] = session['user_id'][0]['id']
+        
+        return redirect('/')
 
-        session["user_id"] = db.execute("SELECT id FROM users WHERE username = ?", username)
-
-        return render_template("login.html")
-    # If the request method is not post (i.e., user sent a request and didn't input any info), just render for him register.html
-    else:
-        return render_template("register.html")
+    return render_template('register.html')
 
 
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
     """Sell shares of stock"""
-
-    # If the request method is POST
     if request.method == "POST":
-
-        # Get shares and symbol from user
-        shares = request.form.get("shares")
-        symbol = request.form.get("symbol")
-
-        # If user didn't write anything in the shares box
-        if not shares:
-
-            # Return an error to the user
-            return apology("Enter shares")
-
-        # If user didn't write anything in the symbol box
+        symbol = request.form['symbol']
+        shares = request.form['shares']
+        
         if not symbol:
-
-            # Return an error to the user
-            return apology("Enter symbol")
-
-        # Look up the database for that stock symbol
-        quote_search = lookup(symbol)
-
-        # If there is no stock symbol found in the database
-        if not quote_search:
-
-            # Return an error to the user
-            return apology("Failed to find quote")
-
-        # Try converting shares to int
+            return apology("must provide symbol")
+        
+        if not shares:
+            return apology("must provide shares")
+        
+        
         try:
-
-            # Convert shares to int
+            shares = float(shares)
+            
+            if shares % 1 != 0 or shares < 1:
+                raise ValueError
+            
             shares = int(shares)
 
-        # Except (coversion failed)
         except ValueError:
+            return apology('must provide a valid number of shares')
+        
+        quote = lookup(symbol)
+        
+        if not quote:
+            return apology("invalid symbol")
+        
+        current_shares = db.execute('SELECT shares FROM quotes WHERE symbol = ? AND user_id = ?', symbol, session['user_id'])
+        
+        if len(current_shares) != 1:
+            return apology("something went wrong")
+        
+        current_shares = current_shares[0]['shares']
+        
+        if shares > current_shares:
+            return apology("you do not have enough shares")
+        
+        db.execute('UPDATE users SET cash = cash + ? WHERE id = ?', quote['price'] * shares, session['user_id'])
+        if shares == current_shares:
+            db.execute('DELETE FROM quotes WHERE symbol = ? AND user_id = ?', symbol, session['user_id'])
+        else:
+            db.execute('UPDATE quotes SET shares = shares - ? WHERE symbol = ? AND user_id = ?', shares, symbol, session['user_id'])
 
-            # Return an error to the user
-            return apology("Invalid shares")
-
-        # If the shares are less than 1
-        if shares < 1:
-
-            # Return an error to the user
-            return apology("Invalid shares")
-
-        # Get the price from the quote search
-        price = quote_search['price']
-
-        # Get the amount of shares in the chosen stock symbol
-        symb_shares_list = db.execute("SELECT shares FROM quotes WHERE user_id = ? AND symbol = ?", session['user_id'], symbol)
-
-        # If something went wrong with finding the shares
-        if len(symb_shares_list) != 1:
-
-            # Return an error to the user
-            return apology("Could not find amount of shares on your account")
-
-        # Make symb_shares a list
-        symb_shares = symb_shares_list[0]['shares']
-
-        # If the chosen shares are more than the shares the user has
-        if shares > symb_shares:
-
-            # Return an error to the user
-            return apology("Invalid shares")
-
-        # Get the cash from the user
-        cash_list = db.execute("SELECT cash FROM users WHERE id = ?", session['user_id'])
-
-        # If there's an error and there's an unexpected number of users with the same id (i.e., 0, 2, 3, etc.)
-        if len(cash_list) != 1:
-
-            # Return an error to the user
-            return apology("Could not read cash value")
-
-        # Set cash to be the cash list
-        cash = cash_list[0]['cash']
-
-        # Update the user's cash
-        db.execute("UPDATE users SET cash = cash + ? * ? WHERE id = ?", float(price), shares, session['user_id'])
-
-        # Update cash
-        cash_list = db.execute("SELECT cash FROM users WHERE id = ?", session['user_id'])
-
-        db.execute("UPDATE quotes SET shares = shares - ? WHERE user_id = ? AND symbol = ?", shares, session['user_id'], symbol)
-
-        # If tehre's an error and there's an unexpected number of users with the same id (i.e., 0, 2, 3, etc.)
-        if len(cash_list) != 1:
-
-            # Return an error to the user
-            return apology("Could not read cash value")
-
-        # Old cash variable before update
-        old_cash = cash
-
-        # Update cash
-        cash = cash_list[0]['cash']
-
-        # Set the total of sold amount
-        total = (cash + price * shares) - old_cash
-
-        quote_search = lookup(symbol)
-        if not quote_search:
-            return apology("Could not find quote")
-
-        name = quote_search['name']
-        db.execute("INSERT INTO transactions (user_id, type, symbol, price, shares, name) VALUES (?, ?, ?, ?, ?, ?)",
-                   session['user_id'], 'sell', symbol, price, shares, name)
-        # Return a happy success message
+        db.execute('INSERT INTO transactions (user_id, type, symbol, name, shares, price) VALUES (?, ?, ?, ?, ?, ?)', session['user_id'], 'Sell', quote['symbol'], quote['name'], shares, quote['price'])
+        
         return redirect('/')
 
-    # Else (the request method is GET)
-    else:
-
-        # Get the quotes of the user
-        quotes = db.execute("SELECT * FROM quotes WHERE user_id = ?", session['user_id'])
-
-        # Return a page for the quotes to sell
-        return render_template("sell.html", quotes=quotes)
+    quotes = db.execute('SELECT * FROM quotes WHERE user_id = ?', session['user_id'])
+    return render_template("sell.html", quotes=quotes)
