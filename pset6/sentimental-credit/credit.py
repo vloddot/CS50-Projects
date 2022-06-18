@@ -14,7 +14,6 @@ def main():
 
     # MASTERCARD starts with 51 through 55 and is 16 digits long
     if (c_num[:2] == '51' or c_num[:2] == '52' or c_num[:2] == '53' or c_num[:2] == '54' or c_num[:2] == '55') and len(c_num) == 16:
-
         print('MASTERCARD')
         sys.exit(0)
 
@@ -25,8 +24,6 @@ def main():
 
     print('INVALID')
         
-
-
 
 def is_valid(c_num):
     """
@@ -44,12 +41,13 @@ def is_valid(c_num):
     fullsum = 0
 
     try:
+        # Example: len(c_num) == 15, then we want to end doubling at index 13
         if len(c_num) % 2 == 1:
             for i, digit in enumerate(map(int, c_num)):
+                # Double every other digit starting with the second-to-last digit
                 if i % 2 == 1:
                     digit *= 2
                     digit = (digit % 10) + (digit // 10)
-
 
                 fullsum += digit
         else:
@@ -57,7 +55,6 @@ def is_valid(c_num):
                 if i % 2 == 0:
                     digit *= 2
                     digit = (digit % 10) + (digit // 10)
-
 
                 fullsum += digit
 
