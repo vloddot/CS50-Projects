@@ -1,69 +1,37 @@
---[[
-    Hello, world!
-    This is CS50 and this is my Final Project to end it all!
-    This project is inspired from CS50G's first project which
-    is a recreation of Pong for the Atari 2600 from 1972
-    This project's code is re-written in a diffeerent
-    folder format where instead of putting all of the
-    game states in main.lua, we use a state machine to
-    put them all in files like StartState.lua, ServeState.lua, etc.
-]]
-
---[[ 
-    Require the dependencies file from src
-    which includes all the require
-    statements instead of putting them all in main.lua
-]]
 require 'src/Dependencies'
 
--- FPS boolean variable for rendering the FPS
-local fps = false
+local showFPS = false
 
--- Coordinates boolean variable for rendering X and Y values of the mouse
-local coordinates = false
-
---[[
-    love.load()
-    Called at the start of program execution, used to declare global values,
-    reset random seeds, use a default filter, setup the screen
-]]
 function love.load()
-
-    -- Use nearest neighbor filtering instead of linear filtering
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
-    -- Use a random seed each time we boot up the game
     math.randomseed(os.time())
 
-    -- Set the window title to Pong!
     love.window.setTitle('Pong!')
 
-    --[[
-        Declare the global sounds array that houses
-        'wall_hit', 'paddle_hit', and 'score' sounds and load them
-    ]]
-    gSounds = {
-        ['wall_hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static'),
-        ['paddle_hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
-        ['score'] = love.audio.newSource('sounds/score.wav', 'static')
+    gFonts = {
+        ['small'] = love.graphics.newFont('fonts/font.ttf', 8),
+        ['medium'] = love.graphics.newFont('fonts/font.ttf', 16),
+        ['large'] = love.graphics.newFont('fonts/font.ttf', 32)
     }
+    gSounds = {
+        ['paddle-hit'] = love.audio.newSource('sounds/paddle_hit.wav', 'static'),
+        ['score'] = love.audio.newSource('sounds/score.wav', 'static'),
+        ['wall-hit'] = love.audio.newSource('sounds/wall_hit.wav', 'static')
+    }
+    love.graphics.setFont(gFonts['small'])
 
-    --[[
-        Make a global state machine that includes
-        a bunch of different state functions
-        which return the state used for StateMachine.lua
-        to handle.
-        It includes the following states: 
-            'start' which is where the user gets to change options
-            'serve' which is where the game waits for the user to serve the ball
-            'play' which is where the players play against eachother normally
-            'done' which is where players are rewarded with a message of which player won
-    ]]
+    push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
+        fullscreen = false,
+        resizable = false,
+        vsync = true
+    })
+
     gStateMachine = StateMachine {
         ['start'] = function() return StartState() end,
         ['serve'] = function() return ServeState() end,
         ['play'] = function() return PlayState() end,
-        ['done'] = function() return DoneState() end
+        ['game-over'] = function() return GameOverState() end
     }
 
     gStateMachine:change('start')
@@ -152,6 +120,10 @@ function love.keypressed(key)
     if key == 'x' then
         coordinates = not coordinates
         gSounds['paddle_hit']:play()
+    end
+
+    if key == 'f' then
+        showFPS = not showFPS
     end
 end
 
