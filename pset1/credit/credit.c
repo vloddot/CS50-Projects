@@ -97,11 +97,8 @@ int isValid(char *c_num)
             if (i % 2 == 1)
             {
                 digit *= 2;
-                if (digit > 9)
-                {
-                    // Add the products' digits together
-                    digit = (digit % 10) + (digit / 10);
-                }
+                // Add the products' digits together
+                digit = (digit % 10) + (digit / 10);
             }
             sum += digit;
         }
@@ -114,10 +111,7 @@ int isValid(char *c_num)
             if (i % 2 == 0)
             {
                 digit *= 2;
-                if (digit > 9)
-                {
-                    digit = (digit % 10) + (digit / 10);
-                }
+                digit = (digit % 10) + (digit / 10);
             }
             sum += digit;
         }
