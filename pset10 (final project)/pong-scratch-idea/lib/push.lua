@@ -240,10 +240,9 @@ function push:toGame(x, y)
   return x, y
 end
 
+--doesn't work - TODO
 function push:toReal(x, y)
-  local realX = self._OFFSET.x + (self._GWIDTH * x)/self._WWIDTH
-  local realY = self._OFFSET.y + (self._GHEIGHT * y)/self._WHEIGHT
-  return realX, realY
+  return x + self._OFFSET.x, y + self._OFFSET.y
 end
 
 function push:switchFullscreen(winw, winh)
